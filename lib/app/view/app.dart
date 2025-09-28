@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:keto_calculator/counter/counter.dart';
-import 'package:keto_calculator/l10n/l10n.dart';
+import 'package:keto_calculator/app/view/main_shell.dart';
 
 class App extends StatelessWidget {
-  const App({super.key});
+  const App(this.env, {super.key});
+  final String env;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Keto Calculator',
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        ),
         useMaterial3: true,
+        colorSchemeSeed: Colors.blue,
       ),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: const CounterPage(),
+      home: const MainShell(),
     );
   }
 }
