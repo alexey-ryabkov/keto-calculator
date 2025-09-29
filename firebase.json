@@ -1,0 +1,30 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "wockbair-keto-calculator",
+          "appId": "1:857311063251:android:87ca3fcf17b7e74c2f3826",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "wockbair-keto-calculator",
+          "appId": "1:857311063251:ios:48f9470f06fe89962f3826",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "wockbair-keto-calculator",
+          "configurations": {
+            "android": "1:857311063251:android:87ca3fcf17b7e74c2f3826",
+            "ios": "1:857311063251:ios:48f9470f06fe89962f3826"
+          }
+        }
+      }
+    }
+  }
+}

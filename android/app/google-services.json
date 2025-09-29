@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "857311063251",
+    "project_id": "wockbair-keto-calculator",
+    "storage_bucket": "wockbair-keto-calculator.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857311063251:android:87ca3fcf17b7e74c2f3826",
+        "android_client_info": {
+          "package_name": "com.example.verygoodcore.keto_calculator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtlXJzRMDNBIM03EBei3Wf-ct7aOmYAPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -8,6 +8,8 @@ environment:
 
 dependencies:
   bloc: ^9.0.0
+  cloud_firestore: ^6.0.2
+  firebase_core: ^4.1.1
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -25,3 +27,5 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
+  assets:
+    - assets/images/test.png
