@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:keto_calculator/app/firebase_options.dart';
+import 'package:keto_calculator/core/models/app_user.dart';
+import 'package:keto_calculator/features/profile/data/profile_repository.dart';
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
@@ -34,11 +37,12 @@ Future<void> bootstrap(
 
   Bloc.observer = const AppBlocObserver();
 
-  // Cross-flavor configuration here
-
+  await AppUser.init();
+  // print('App user id is ' + AppUser.instance.id);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  ProfileRepository.init((FirebaseFirestore.instance));
 
   runApp(await builder(env));
 }
