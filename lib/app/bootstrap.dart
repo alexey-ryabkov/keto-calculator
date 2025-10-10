@@ -42,7 +42,7 @@ Future<void> bootstrap(
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  ProfileRepository.init((FirebaseFirestore.instance));
+  await ProfileRepository.init(FirebaseFirestore.instance);
 
   runApp(await builder(env));
 }
