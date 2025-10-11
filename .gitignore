@@ -12,6 +12,7 @@
 .swiftpm/
 migrate_working_dir/
 *bckp*
+tmp
 .env
 
 # IntelliJ related

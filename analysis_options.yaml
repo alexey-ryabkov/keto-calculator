@@ -2,6 +2,15 @@ include: package:very_good_analysis/analysis_options.yaml
 analyzer:
   exclude:
     - lib/l10n/gen/*
+    - lib/**bckp*
+    - lib/tmp/*
+  errors:
+    todo: ignore
+    fixme: ignore
+    hack: ignore
+    prefer_int_literals: ignore
+    avoid_catches_without_on_clauses: ignore
 linter:
   rules:
     public_member_api_docs: false
+    flutter_style_todos: false
