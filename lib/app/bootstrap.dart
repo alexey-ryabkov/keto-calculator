@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
+import 'package:keto_calculator/app/data/firestore.dart';
 import 'package:keto_calculator/app/firebase_options.dart';
 import 'package:keto_calculator/core/models/app_user.dart';
 import 'package:keto_calculator/features/profile/data/profile_repository.dart';
@@ -37,12 +38,19 @@ Future<void> bootstrap(
 
   Bloc.observer = const AppBlocObserver();
 
-  await AppUser.init();
-  // print('App user id is ' + AppUser.instance.id);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await ProfileRepository.init(FirebaseFirestore.instance);
+  final fs = FirebaseFirestore.instance;
+
+  await AppUser.init();
+
+  await Future.wait([
+    ProfileRepository.init(FirestoreProfile(fs)),
+    // JournalRepository.init(FirestoreJournal(fs)),
+    // MealRepository.init(FirestoreMeal(fs)),
+    // ProductRepository.init(FirestoreProduct(fs)),
+  ]);
 
   runApp(await builder(env));
 }

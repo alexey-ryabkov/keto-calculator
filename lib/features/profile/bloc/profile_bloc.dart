@@ -11,7 +11,7 @@ class ProfileBloc extends Cubit<ProfileState> {
   Future<void> init() async {
     emit(state.copyWith(status: ProfileStatus.loading));
     try {
-      final profile = await ProfileRepository.instance.getProfileOnce();
+      final profile = await ProfileRepository.instance.get();
       if (profile == null) {
         emit(state.copyWith(status: ProfileStatus.none));
       } else {
@@ -25,7 +25,7 @@ class ProfileBloc extends Cubit<ProfileState> {
   Future<void> create(Profile profile) async {
     emit(state.copyWith(status: ProfileStatus.saving));
     try {
-      await ProfileRepository.instance.createProfile(profile);
+      await ProfileRepository.instance.create(profile);
       emit(state.copyWith(profile: profile, status: ProfileStatus.ready));
     } catch (e) {
       emit(state.copyWith(status: ProfileStatus.error, error: e.toString()));
@@ -35,7 +35,7 @@ class ProfileBloc extends Cubit<ProfileState> {
   Future<void> save(Profile profile) async {
     emit(state.copyWith(status: ProfileStatus.saving));
     try {
-      await ProfileRepository.instance.saveProfile(profile);
+      await ProfileRepository.instance.save(profile);
       emit(state.copyWith(profile: profile, status: ProfileStatus.ready));
     } catch (e) {
       emit(state.copyWith(status: ProfileStatus.error, error: e.toString()));
@@ -45,7 +45,7 @@ class ProfileBloc extends Cubit<ProfileState> {
   Future<void> reload() async {
     emit(state.copyWith(status: ProfileStatus.loading));
     try {
-      final profile = await ProfileRepository.instance.getProfileOnce();
+      final profile = await ProfileRepository.instance.get();
       if (profile == null) {
         emit(state.copyWith(status: ProfileStatus.none));
       } else {
