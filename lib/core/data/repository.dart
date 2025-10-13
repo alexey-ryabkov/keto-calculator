@@ -18,23 +18,57 @@ class PaginatedItems {
 }
 
 abstract interface class MultiItemsSource {
-  Future<List<Map<String, dynamic>>> getAll(String collectionPath);
-  Future<PaginatedItems> getList(
-    String collectionPath, {
+  Future<List<Map<String, dynamic>>> getAll();
+  Future<PaginatedItems> getList({
     int size,
     String? afterId,
+    List<SourceItemsFilter>? filters,
+    List<SourceItemsOrder>? orderBy,
     // bool includeId = true,
   });
   Future<Map<String, dynamic>> addItem(
-    String collectionPath,
     Map<String, dynamic> data, {
     String? id,
   });
-  Future<Map<String, dynamic>?> getItem(String itemPath);
-  Future<void> updateItem(String itemPath, Map<String, dynamic> data);
-  Future<void> deleteItem(String itemPath);
-  Future<bool> isItemExists(String itemPath);
-  Future<void> clear(String collectionPath);
+  Future<Map<String, dynamic>?> getItem(String itemId);
+  Future<void> updateItem(String itemId, Map<String, dynamic> data);
+  Future<void> deleteItem(String itemId);
+  Future<bool> isItemExists(String itemId);
+  Future<void> clear();
+}
+
+final class SourceItemsFilter {
+  SourceItemsFilter(
+    this.field, {
+    this.isEqualTo,
+    this.isNotEqualTo,
+    this.isLessThan,
+    this.isLessThanOrEqualTo,
+    this.isGreaterThan,
+    this.isGreaterThanOrEqualTo,
+    this.arrayContains,
+    this.arrayContainsAny,
+    this.whereIn,
+    this.whereNotIn,
+  });
+
+  final String field;
+  final Object? isEqualTo;
+  final Object? isNotEqualTo;
+  final Object? isLessThan;
+  final Object? isLessThanOrEqualTo;
+  final Object? isGreaterThan;
+  final Object? isGreaterThanOrEqualTo;
+  final Object? arrayContains;
+  final List<Object?>? arrayContainsAny;
+  final List<Object?>? whereIn;
+  final List<Object?>? whereNotIn;
+}
+
+final class SourceItemsOrder {
+  const SourceItemsOrder(this.field, {this.descending = false});
+  final String field;
+  final bool descending;
 }
 
 abstract class DataRepository<T extends DataRepository<T, DF>, DF> {

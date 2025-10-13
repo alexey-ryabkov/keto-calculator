@@ -33,12 +33,15 @@ class FirestoreSourse {
     String collectionPath, {
     int size = 0,
     String? afterId,
+    List<SourceItemsFilter>? filters,
+    List<SourceItemsOrder>? orderBy,
     // bool includeId = true,
   }) async {
     Query<Map<String, dynamic>> collectionRef = _getCollectionRef(
       collectionPath,
     );
-    collectionRef = collectionRef.orderBy(FieldPath.documentId);
+    collectionRef = collectionRef.applyFilters(filters, orderBy);
+    // collectionRef = collectionRef.orderBy(FieldPath.documentId);
     if (size > 0) collectionRef = collectionRef.limit(size);
     if (afterId != null && afterId.isNotEmpty) {
       collectionRef = collectionRef.startAfter([afterId]);
@@ -128,40 +131,110 @@ class FirestoreSourse {
 
 abstract class SingleDocFirestoreSource implements SingleItemSource {
   SingleDocFirestoreSource(FirebaseFirestore fs)
-    : _docRef = FirestoreSourse(fs);
-  final FirestoreSourse _docRef;
+    : _fsSource = FirestoreSourse(fs);
+  final FirestoreSourse _fsSource;
 
   String get docPath;
 
   @override
-  Future<Map<String, dynamic>?> get() => _docRef.getItem(docPath);
+  Future<Map<String, dynamic>?> get() => _fsSource.getItem(docPath);
 
   @override
   Future<void> set(
     Map<String, dynamic> data, {
     bool merge = false,
-  }) => _docRef.setItem(docPath, data, merge: merge);
+  }) => _fsSource.setItem(docPath, data, merge: merge);
 
   @override
-  Future<void> delete() => _docRef.deleteItem(docPath);
+  Future<void> delete() => _fsSource.deleteItem(docPath);
 
   @override
-  Future<bool> isExists() => _docRef.isItemExists(docPath);
+  Future<bool> isExists() => _fsSource.isItemExists(docPath);
 }
 
-abstract class CollectionDocsFirestoreSource extends FirestoreSourse
-    implements MultiItemsSource {
-  CollectionDocsFirestoreSource(super._fs);
+abstract class CollectionDocsFirestoreSource implements MultiItemsSource {
+  CollectionDocsFirestoreSource(FirebaseFirestore fs)
+    : _fsSource = FirestoreSourse(fs);
+  final FirestoreSourse _fsSource;
 
   String get collectionPath;
-  String getDocPath(String item);
+  String getDocPath(String itemId);
 
   @override
-  // ignore: avoid_renaming_method_parameters, cause now we need to pass only item part of path
-  DocumentReference<Map<String, dynamic>> _getDocRef(String item) =>
-      super._getDocRef(getDocPath(item));
+  Future<List<Map<String, dynamic>>> getAll() =>
+      _fsSource.getAll(collectionPath);
 
   @override
-  CollectionReference<Map<String, dynamic>> _getCollectionRef([String? _]) =>
-      super._getCollectionRef(collectionPath);
+  Future<PaginatedItems> getList({
+    int size = 0,
+    String? afterId,
+    List<SourceItemsFilter>? filters,
+    List<SourceItemsOrder>? orderBy,
+  }) => _fsSource.getList(
+    collectionPath,
+    size: size,
+    afterId: afterId,
+    filters: filters,
+    orderBy: orderBy,
+  );
+
+  @override
+  Future<Map<String, dynamic>> addItem(
+    Map<String, dynamic> data, {
+    String? id,
+  }) => _fsSource.addItem(collectionPath, data, id: id);
+
+  @override
+  Future<Map<String, dynamic>?> getItem(String itemId) =>
+      _fsSource.getItem(getDocPath(itemId));
+
+  @override
+  Future<void> updateItem(String itemId, Map<String, dynamic> data) =>
+      _fsSource.updateItem(getDocPath(itemId), data);
+
+  @override
+  Future<void> deleteItem(String itemId) =>
+      _fsSource.deleteItem(getDocPath(itemId));
+
+  @override
+  Future<bool> isItemExists(String itemId) =>
+      _fsSource.isItemExists(getDocPath(itemId));
+
+  @override
+  Future<void> clear() => _fsSource.clear(collectionPath);
+}
+
+extension FirestoreQueryBuilder on Query<Map<String, dynamic>> {
+  Query<Map<String, dynamic>> applyFilters(
+    List<SourceItemsFilter>? filters,
+    List<SourceItemsOrder>? orderBy,
+  ) {
+    var q = this;
+
+    if (filters != null && filters.isNotEmpty) {
+      for (final f in filters) {
+        q = q.where(
+          f.field,
+          isEqualTo: f.isEqualTo,
+          isNotEqualTo: f.isNotEqualTo,
+          isLessThan: f.isLessThan,
+          isLessThanOrEqualTo: f.isLessThanOrEqualTo,
+          isGreaterThan: f.isGreaterThan,
+          isGreaterThanOrEqualTo: f.isGreaterThanOrEqualTo,
+          arrayContains: f.arrayContains,
+          arrayContainsAny: f.arrayContainsAny,
+          whereIn: f.whereIn,
+          whereNotIn: f.whereNotIn,
+        );
+      }
+    }
+
+    if (orderBy != null && orderBy.isNotEmpty) {
+      for (final o in orderBy) {
+        q = q.orderBy(o.field, descending: o.descending);
+      }
+    }
+
+    return q;
+  }
 }

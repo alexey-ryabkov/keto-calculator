@@ -38,7 +38,7 @@ class FirestoreJournal extends CollectionDocsFirestoreSource {
   String get collectionPath => FirestorePaths.userJournal();
 
   @override
-  String getDocPath(String item) => FirestorePaths.userJournal(item);
+  String getDocPath(String itemId) => FirestorePaths.userJournal(itemId);
 }
 
 class FirestoreMeal extends CollectionDocsFirestoreSource {
@@ -48,7 +48,7 @@ class FirestoreMeal extends CollectionDocsFirestoreSource {
   String get collectionPath => FirestorePaths.userMeal();
 
   @override
-  String getDocPath(String item) => FirestorePaths.userMeal(item);
+  String getDocPath(String itemId) => FirestorePaths.userMeal(itemId);
 }
 
 class FirestoreProduct extends CollectionDocsFirestoreSource {
@@ -58,5 +58,5 @@ class FirestoreProduct extends CollectionDocsFirestoreSource {
   String get collectionPath => FirestorePaths.userProduct();
 
   @override
-  String getDocPath(String item) => FirestorePaths.userProduct(item);
+  String getDocPath(String itemId) => FirestorePaths.userProduct(itemId);
 }
