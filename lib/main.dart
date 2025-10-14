@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keto_calculator/app/app.dart';
+import 'package:keto_calculator/app/bloc/navigation_bloc.dart';
 import 'package:keto_calculator/features/profile/bloc/profile_bloc.dart';
 
 void main() {
@@ -7,6 +8,7 @@ void main() {
     (env) => MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => ProfileBloc()..init()),
+        BlocProvider(create: (_) => NavigationBloc()),
       ],
       child: App(env),
     ),
