@@ -9,6 +9,7 @@ import 'package:keto_calculator/app/data/firestore.dart';
 import 'package:keto_calculator/app/firebase_options.dart';
 import 'package:keto_calculator/core/models/app_user.dart';
 import 'package:keto_calculator/features/profile/data/profile_repository.dart';
+import 'package:keto_calculator/features/tracking/data/journal_repository.dart';
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
@@ -47,7 +48,7 @@ Future<void> bootstrap(
 
   await Future.wait([
     ProfileRepository.init(FirestoreProfile(fs)),
-    // JournalRepository.init(FirestoreJournal(fs)),
+    JournalRepository.init(FirestoreJournal(fs)),
     // MealRepository.init(FirestoreMeal(fs)),
     // ProductRepository.init(FirestoreProduct(fs)),
   ]);
