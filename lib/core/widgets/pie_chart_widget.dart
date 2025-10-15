@@ -2,8 +2,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class PieChartWidget extends StatelessWidget {
-  final Map<String, double> data; // values 0..1 that sum to ~1
-  const PieChartWidget({super.key, required this.data});
+  // values 0..1 that sum to ~1
+  const PieChartWidget({required this.data, super.key});
+  final Map<String, double> data;
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +48,9 @@ class PieChartWidget extends StatelessWidget {
 }
 
 class _PiePainter extends CustomPainter {
+  _PiePainter({required this.values, required this.colors});
   final List<double> values;
   final List<Color> colors;
-  _PiePainter({required this.values, required this.colors});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -57,26 +58,24 @@ class _PiePainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final rect = Rect.fromCircle(center: center, radius: radius);
     final paint = Paint()..style = PaintingStyle.fill;
-    double startAngle = -pi / 2;
+    var startAngle = -pi / 2;
     for (var i = 0; i < values.length; i++) {
       final sweep = (values[i].isFinite ? values[i] : 0.0) * 2 * pi;
       paint.color = colors[i % colors.length];
       canvas.drawArc(rect, startAngle, sweep, true, paint);
       startAngle += sweep;
     }
-    // inner circle for donut
     final innerPaint = Paint()..color = Colors.white;
     canvas.drawCircle(center, radius * 0.5, innerPaint);
-    // optional center text
-    final tp = TextPainter(
-      text: TextSpan(
-        text: 'БЖУ',
-        style: TextStyle(color: Colors.black, fontSize: 14),
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    tp.layout();
-    tp.paint(canvas, center - Offset(tp.width / 2, tp.height / 2));
+    // final tp = TextPainter(
+    //   text: const TextSpan(
+    //     text: 'БЖУ',
+    //     style: TextStyle(color: Colors.black, fontSize: 14),
+    //   ),
+    //   textDirection: TextDirection.ltr,
+    // );
+    // tp.layout();
+    // tp.paint(canvas, center - Offset(tp.width / 2, tp.height / 2));
   }
 
   @override

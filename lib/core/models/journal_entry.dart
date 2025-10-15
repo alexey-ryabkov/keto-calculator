@@ -1,31 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:keto_calculator/core/models/nutrition.dart';
+import 'package:keto_calculator/core/utils/utils.dart';
 
-class JournalEntry {
+class JournalEntry implements Consumable {
   JournalEntry({
     required this.datetime,
     required this.title,
     required this.kcal,
-    required this.protein,
-    required this.fat,
+    required this.proteins,
+    required this.fats,
     required this.carbs,
     this.weightGrams,
     this.id,
   });
 
   factory JournalEntry.fromJson(Map<String, dynamic> json) {
-    final dt = _parseDateTime(json['datetime']) ?? DateTime.now();
+    final dt = parseDateTime(json['datetime']) ?? DateTime.now();
     return JournalEntry(
       id: json['id'] as String?,
-      // ??
-      // (json['docId'] as String?), // accept doc id under different keys
       datetime: dt,
       title: (json['title'] as String?) ?? '',
-      kcal: _toDouble(json['kcal']),
-      protein: _toDouble(json['protein']),
-      fat: _toDouble(json['fat']),
-      carbs: _toDouble(json['carbs']),
+      kcal: toDouble(json['kcal']),
+      proteins: toDouble(json['protein']),
+      fats: toDouble(json['fat']),
+      carbs: toDouble(json['carbs']),
       weightGrams: json.containsKey('weightGrams')
-          ? _toDouble(json['weightGrams'])
+          ? toDouble(json['weightGrams'])
           : null,
     );
   }
@@ -33,11 +33,14 @@ class JournalEntry {
   final DateTime datetime;
   final String title;
   final double kcal;
-  final double protein;
-  final double fat;
-  final double carbs;
   final double? weightGrams;
   final String? id;
+  @override
+  final double proteins;
+  @override
+  final double fats;
+  @override
+  final double carbs;
 
   JournalEntry copyWith({
     String? id,
@@ -54,8 +57,8 @@ class JournalEntry {
       datetime: datetime ?? this.datetime,
       title: title ?? this.title,
       kcal: kcal ?? this.kcal,
-      protein: protein ?? this.protein,
-      fat: fat ?? this.fat,
+      proteins: protein ?? proteins,
+      fats: fat ?? fats,
       carbs: carbs ?? this.carbs,
       weightGrams: weightGrams ?? this.weightGrams,
     );
@@ -67,36 +70,11 @@ class JournalEntry {
       'datetime': Timestamp.fromDate(datetime),
       'title': title,
       'kcal': kcal,
-      'protein': protein,
-      'fat': fat,
+      'protein': proteins,
+      'fat': fats,
       'carbs': carbs,
       if (weightGrams != null) 'weightGrams': weightGrams,
     };
-  }
-
-  // TODO below methods to utils?
-  static DateTime? _parseDateTime(Object? v) {
-    if (v == null) return null;
-    if (v is Timestamp) return v.toDate();
-    if (v is DateTime) return v;
-    if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
-    if (v is String) {
-      final parsed = DateTime.tryParse(v);
-      if (parsed != null) return parsed;
-      final maybeInt = int.tryParse(v);
-      if (maybeInt != null) {
-        return DateTime.fromMillisecondsSinceEpoch(maybeInt);
-      }
-    }
-    return null;
-  }
-
-  static double _toDouble(Object? v) {
-    if (v == null) return 0.0;
-    if (v is double) return v;
-    if (v is int) return v.toDouble();
-    if (v is String) return double.tryParse(v.replaceAll(',', '.')) ?? 0.0;
-    return 0.0;
   }
 
   @override

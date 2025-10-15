@@ -23,8 +23,10 @@ class Profile {
     final bdt = json['birthdate'];
     if (bdt is Timestamp) {
       bd = bdt.toDate();
-    } else if (bdt is String) {
-      bd = DateTime.tryParse(bdt);
+    } else {
+      // if (bdt is String) {
+      // FIXME
+      bd = DateTime.tryParse(bdt as String);
     }
 
     var sex = Sex.male;
@@ -42,18 +44,19 @@ class Profile {
       );
     }
 
-    DietType _diet = DietType.notKeto;
+    var diet = DietType.notKeto;
     final dt = json['dietType'] as String?;
-    if (dt != null)
-      _diet = DietType.values.firstWhere(
+    if (dt != null) {
+      diet = DietType.values.firstWhere(
         (e) => e.name == dt,
         orElse: () => DietType.notKeto,
       );
+    }
 
     return Profile(
       userId: (json['userId'] as String?) ?? '',
       nickname: (json['nickname'] as String?) ?? '',
-      birthdate: bd,
+      birthdate: bd!,
       sex: sex,
       weightKg: (json['weightKg'] is num)
           ? (json['weightKg'] as num).toDouble()
@@ -62,13 +65,13 @@ class Profile {
           ? (json['heightCm'] as num).toDouble()
           : double.tryParse((json['heightCm'] ?? '0').toString()) ?? 0.0,
       lifestyle: lifestyle,
-      dietType: _diet,
+      dietType: diet,
     );
   }
 
   final String userId;
   final String nickname;
-  final DateTime? birthdate;
+  final DateTime birthdate;
   final Sex sex;
   final double weightKg;
   final double heightCm;
@@ -99,7 +102,7 @@ class Profile {
   Map<String, dynamic> toJson() => {
     'userId': userId,
     'nickname': nickname,
-    'birthdate': birthdate == null ? null : Timestamp.fromDate(birthdate!),
+    'birthdate': Timestamp.fromDate(birthdate),
     'sex': sex.name,
     'weightKg': weightKg,
     'heightCm': heightCm,
@@ -107,4 +110,9 @@ class Profile {
     'dietType': dietType.name,
     'updatedAt': FieldValue.serverTimestamp(),
   };
+
+  @override
+  String toString() {
+    return 'Profile(${toJson()})';
+  }
 }

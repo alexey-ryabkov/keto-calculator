@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:keto_calculator/core/data/api.dart';
 import 'package:keto_calculator/core/models/app_error.dart';
 import 'package:keto_calculator/core/models/product.dart';
-import 'package:keto_calculator/core/models/api.dart';
 
 const String _baseUrl = 'https://api.spoonacular.com';
 const String _productsSearchPath = '/food/ingredients/search';

@@ -3,20 +3,19 @@ import 'package:keto_calculator/core/models/meal.dart';
 import 'package:keto_calculator/core/models/product.dart';
 
 class MenuScreen extends StatefulWidget {
-  final List<Meal> localMeals;
-  final List<Product> localProducts;
-  final void Function(Product product) onConsumeFromLocal;
-  final void Function(int index) onDeleteMealAt;
-  final VoidCallback onAddMealPressed;
-
   const MenuScreen({
-    super.key,
     required this.localMeals,
     required this.localProducts,
     required this.onConsumeFromLocal,
     required this.onDeleteMealAt,
     required this.onAddMealPressed,
+    super.key,
   });
+  final List<Meal> localMeals;
+  final List<ProductData> localProducts;
+  final void Function(ProductData product) onConsumeFromLocal;
+  final void Function(int index) onDeleteMealAt;
+  final VoidCallback onAddMealPressed;
 
   @override
   State<MenuScreen> createState() => _MenuScreenState();
@@ -24,7 +23,7 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<Product> _suggestions = [];
+  List<ProductData> _suggestions = [];
 
   @override
   void initState() {
@@ -57,10 +56,10 @@ class _MenuScreenState extends State<MenuScreen> {
           padding: const EdgeInsets.all(12),
           child: Column(
             children: [
-              Autocomplete<Product>(
+              Autocomplete<ProductData>(
                 optionsBuilder: (textEditingValue) {
                   final q = textEditingValue.text.toLowerCase();
-                  if (q.isEmpty) return const Iterable<Product>.empty();
+                  if (q.isEmpty) return const Iterable<ProductData>.empty();
                   final localMatches = widget.localProducts.where(
                     (p) => p.name.toLowerCase().contains(q),
                   );
@@ -114,7 +113,9 @@ class _MenuScreenState extends State<MenuScreen> {
               const SizedBox(height: 12),
               Expanded(
                 child: meals.isEmpty
-                    ? Center(child: Text('Список пуст — нажмите Add meal'))
+                    ? const Center(
+                        child: Text('Список пуст — нажмите Add meal'),
+                      )
                     : ListView.builder(
                         itemCount: meals.length,
                         itemBuilder: (context, idx) {

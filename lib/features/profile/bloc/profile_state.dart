@@ -1,6 +1,5 @@
-import 'package:meta/meta.dart';
-
 import 'package:keto_calculator/core/models/profile.dart';
+import 'package:meta/meta.dart';
 
 enum ProfileStatus { initial, loading, none, ready, saving, error }
 
@@ -12,7 +11,6 @@ class ProfileState {
     this.error,
   });
 
-  // TODO разве не ProfileStatus.none ?
   factory ProfileState.initial() =>
       const ProfileState(profile: null, status: ProfileStatus.initial);
   final Profile? profile;
@@ -30,4 +28,7 @@ class ProfileState {
       error: error ?? this.error,
     );
   }
+
+  @override
+  String toString() => 'ProfileState(status=$status, $profile)';
 }

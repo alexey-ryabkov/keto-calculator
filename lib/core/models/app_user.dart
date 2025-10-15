@@ -1,5 +1,5 @@
-import 'package:uuid/uuid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 const _kUserIdPrefKey = 'k_user_id';
 const _uuid = Uuid();

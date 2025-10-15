@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:keto_calculator/core/models/product.dart';
 
 class ProductsScreen extends StatefulWidget {
-  final List<Product> localProducts;
-  final List<Product> catalog;
-  final void Function(Product) onAddToLocal;
-  final void Function(Product) onAddToMenu;
-
   const ProductsScreen({
-    super.key,
     required this.localProducts,
     required this.catalog,
     required this.onAddToLocal,
     required this.onAddToMenu,
+    super.key,
   });
+  final List<ProductData> localProducts;
+  final List<ProductData> catalog;
+  final void Function(ProductData) onAddToLocal;
+  final void Function(ProductData) onAddToMenu;
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();
@@ -21,7 +20,7 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<Product> _results = [];
+  List<ProductData> _results = [];
 
   @override
   void initState() {

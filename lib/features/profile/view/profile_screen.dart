@@ -71,13 +71,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // }
 
   Future<void> _onSave(ProfileState state) async {
-    if (!_formKey.currentState!.validate()) return;
+    // FIXME
+    if (!_formKey.currentState!.validate() || _birthdate == null) return;
 
     final sex = _sexIndex == 0 ? Sex.male : Sex.female;
     final profile = Profile(
       userId: AppUser.instance.id,
       nickname: _nicknameC.text.trim(),
-      birthdate: _birthdate,
+      birthdate: _birthdate!,
       sex: sex,
       weightKg: double.parse(_weightC.text.replaceAll(',', '.')),
       heightCm: double.parse(_heightC.text.replaceAll(',', '.')),

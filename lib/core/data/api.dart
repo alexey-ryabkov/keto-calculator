@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:keto_calculator/core/models/app_error.dart';
 import 'package:keto_calculator/core/models/product.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 base class HttpApiConfig {
   HttpApiConfig({this.timeout = 10_000});

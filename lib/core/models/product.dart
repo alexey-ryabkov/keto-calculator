@@ -46,12 +46,12 @@ class ProductItem extends ProductOffer {
 class ProductData extends ProductItem {
   ProductData({
     required super.name,
-    required super.id,
     required this.kcalPer100g,
     required this.protein,
     required this.fat,
     required this.carbs,
     required this.keto,
+    super.id = 0,
     super.image,
   });
 
@@ -59,13 +59,10 @@ class ProductData extends ProductItem {
     double findNutrient(List<dynamic>? nutrients, String key) {
       if (nutrients == null) return 0;
       try {
-        final Map<String, dynamic>? node = nutrients
-            .cast<Map<String, dynamic>?>()
-            .firstWhere(
-              (n) =>
-                  (n?['name'] as String?)?.toLowerCase() == key.toLowerCase(),
-              orElse: () => null,
-            );
+        final node = nutrients.cast<Map<String, dynamic>?>().firstWhere(
+          (n) => (n?['name'] as String?)?.toLowerCase() == key.toLowerCase(),
+          orElse: () => null,
+        );
         if (node == null) return 0;
         final val = node['amount'];
         if (val is num) return val.toDouble();
