@@ -1,12 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:keto_calculator/core/models/nutrition.dart';
 import 'package:keto_calculator/core/models/profile.dart';
+import 'package:keto_calculator/core/utils/utils.dart';
 import 'package:keto_calculator/features/profile/bloc/profile_state.dart';
 import 'package:keto_calculator/features/profile/data/profile_repository.dart';
 
 class ProfileBloc extends Cubit<ProfileState> {
   ProfileBloc() : super(ProfileState.initial());
+
+  bool get isProfileDefined => ![
+    ProfileStatus.initial,
+    ProfileStatus.saving,
+    ProfileStatus.loading,
+  ].contains(state.status);
+  bool get isProfileNotEmpty => state.profile != null;
+  NutritionTarget? get nutritionTarget =>
+      isProfileNotEmpty ? computeDailyNutritionTargets(state.profile!) : null;
 
   Future<void> init() async {
     emit(state.copyWith(status: ProfileStatus.loading));

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
-class MacroRowWidget extends StatelessWidget {
-  final String label;
-  final double grams;
-  final double percentOfMacros;
-  final double targetPercent;
-  const MacroRowWidget({
+class MacroRow extends StatelessWidget {
+  const MacroRow({
     required this.label,
     required this.grams,
     required this.percentOfMacros,
     required this.targetPercent,
+    super.key,
   });
+  final String label;
+  final double grams;
+  final double percentOfMacros;
+  final double targetPercent;
 
   @override
   Widget build(BuildContext context) {

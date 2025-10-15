@@ -1,7 +1,7 @@
-import 'package:keto_calculator/core/models/nutrition_targets.dart';
+import 'package:keto_calculator/core/models/nutrition.dart';
 import 'package:keto_calculator/core/models/profile.dart';
 
-NutritionTargets computeDailyNutritionTargets(Profile profile) {
+NutritionTarget computeDailyNutritionTargets(Profile profile) {
   final sex = profile.sex;
   final weightKg = profile.weightKg;
   final heightCm = profile.heightCm;
@@ -54,10 +54,10 @@ NutritionTargets computeDailyNutritionTargets(Profile profile) {
     carbPct = carbPct / sum * 100;
   }
 
-  return NutritionTargets(
+  return NutritionTarget(
     calories: tdee,
     proteinPercent: protPct,
     fatPercent: fatPct,
-    carbsPercent: carbPct,
+    carbPercent: carbPct,
   );
 }

@@ -26,7 +26,8 @@ class JournalRepository extends MultiItemsRepository<JournalRepository> {
         .map((item) => JournalEntry.fromJson(item).datetime)
         .map(DateUtils.dateOnly)
         .toSet()
-        .toList();
+        .toList()
+      ..sort((a, b) => a.compareTo(b));
   }
 
   Future<List<JournalEntry>> getForDate(DateTime dt) async {

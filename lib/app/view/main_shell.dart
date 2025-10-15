@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:keto_calculator/app/bloc/navigation_bloc.dart';
+import 'package:keto_calculator/app/models/models.dart';
 import 'package:keto_calculator/core/models/meal.dart';
 import 'package:keto_calculator/core/models/product.dart';
+import 'package:keto_calculator/core/utils/utils.dart';
 import 'package:keto_calculator/features/menu/menu.dart';
 import 'package:keto_calculator/features/products/products.dart';
 import 'package:keto_calculator/features/profile/profile.dart';
+import 'package:keto_calculator/features/tracking/bloc/journal_bloc.dart';
+import 'package:keto_calculator/features/tracking/bloc/tracking_state.dart';
 import 'package:keto_calculator/features/tracking/tracking.dart';
-import 'package:keto_calculator/l10n/l10n.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -14,83 +19,21 @@ class MainShell extends StatefulWidget {
   State<MainShell> createState() => _MainShellState();
 }
 
+// TODO get rid of dummy data n methods
 class _MainShellState extends State<MainShell> {
-  int _currentIndex = 0;
-
-  // Simple in-memory demo data
-  final Map<String, List<Meal>> _mealsByDate = {
-    // today's date will be filled in initState
-  };
-
-  final List<Product> _localProducts = [
-    Product(
-      name: 'Авокадо',
-      kcalPer100g: 160,
-      protein: 2.0,
-      fat: 15.0,
-      carbs: 9.0,
-      keto: true,
-    ),
-    Product(
-      name: 'Куриная грудка',
-      kcalPer100g: 165,
-      protein: 31.0,
-      fat: 3.6,
-      carbs: 0.0,
-      keto: true,
-    ),
-    Product(
-      name: 'Овсянка',
-      kcalPer100g: 389,
-      protein: 13.0,
-      fat: 7.0,
-      carbs: 67.0,
-      keto: false,
-    ),
-  ];
-
-  // remote / catalog products (demo)
-  final List<Product> _catalog = [
-    Product(
-      name: 'Лосось',
-      kcalPer100g: 208,
-      protein: 20.0,
-      fat: 13.0,
-      carbs: 0.0,
-      keto: true,
-    ),
-    Product(
-      name: 'Творог',
-      kcalPer100g: 98,
-      protein: 11.0,
-      fat: 4.3,
-      carbs: 3.4,
-      keto: false,
-    ),
-    Product(
-      name: 'Яйцо',
-      kcalPer100g: 155,
-      protein: 13.0,
-      fat: 11.0,
-      carbs: 1.1,
-      keto: true,
-    ),
-    Product(
-      name: 'Огурец',
-      kcalPer100g: 16,
-      protein: 0.7,
-      fat: 0.1,
-      carbs: 3.6,
-      keto: false,
-    ),
-  ];
-
+  late final JournalBloc _journalBloc;
+  late final TrackingBloc _trackingBloc;
   late DateTime _selectedDate;
 
   @override
   void initState() {
+    _trackingBloc = TrackingBloc();
+    _journalBloc = JournalBloc();
+
     super.initState();
-    _selectedDate = DateTime.now();
+
+    _selectedDate = DateChangeWatcher.today;
+    // _selectedDate = _trackingBloc.state.selectedDate;
     final todayKey = _dateKey(_selectedDate);
     _mealsByDate.putIfAbsent(
       todayKey,
@@ -101,47 +44,34 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
-  String _dateKey(DateTime d) =>
-      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-
-  void _addMealToDate(Meal meal, DateTime date) {
-    setState(() {
-      final key = _dateKey(date);
-      _mealsByDate.putIfAbsent(key, () => []);
-      _mealsByDate[key]!.add(meal);
-    });
-  }
-
-  void _removeMealFromDate(int index, DateTime date) {
-    setState(() {
-      final key = _dateKey(date);
-      _mealsByDate[key]!.removeAt(index);
-    });
-  }
-
-  void _addProductToLocal(Product p) {
-    setState(() {
-      if (!_localProducts.any((x) => x.name == p.name)) {
-        _localProducts.insert(0, p);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final pages = <Widget>[
-      TrackingScreen(
-        selectedDate: _selectedDate,
-        meals: _mealsByDate[_dateKey(_selectedDate)] ?? [],
-        onPrevDay: () => setState(
-          () => _selectedDate = _selectedDate.subtract(const Duration(days: 1)),
+    final pages = <AppPage, Widget>{
+      AppPage.tracking: MultiBlocProvider(
+        // AppPage.tracking: BlocProvider.value(
+        // value: _journalBloc,
+        providers: [
+          BlocProvider.value(value: _journalBloc),
+          BlocProvider.value(value: _trackingBloc),
+        ],
+        child: BlocListener<TrackingBloc, TrackingState>(
+          // when selected date changed or availiable dates list loaded ...
+          listenWhen: (previous, current) =>
+              !DateUtils.isSameDay(
+                previous.selectedDate,
+                current.selectedDate,
+              ) ||
+              (previous.status != TrackingStatus.datesReady &&
+                  current.status == TrackingStatus.datesReady),
+          // ... load journal entries for selected date
+          listener: (context, state) {
+            final date = DateUtils.dateOnly(state.selectedDate);
+            context.read<JournalBloc>().loadForDate(date);
+          },
+          child: const TrackingScreen(),
         ),
-        onNextDay: () => setState(
-          () => _selectedDate = _selectedDate.add(const Duration(days: 1)),
-        ),
-        onRemoveMeal: (index) => _removeMealFromDate(index, _selectedDate),
       ),
-      MenuScreen(
+      AppPage.menu: MenuScreen(
         localMeals: _mealsByDate[_dateKey(_selectedDate)] ?? [],
         localProducts: _localProducts,
         onConsumeFromLocal: (product) {
@@ -152,7 +82,6 @@ class _MainShellState extends State<MainShell> {
         },
         onDeleteMealAt: (index) => _removeMealFromDate(index, _selectedDate),
         onAddMealPressed: () {
-          // For UI demo simply add first local product as eaten
           if (_localProducts.isNotEmpty) {
             _addMealToDate(
               Meal(product: _localProducts.first, weightGrams: 100),
@@ -161,21 +90,24 @@ class _MainShellState extends State<MainShell> {
           }
         },
       ),
-      ProductsScreen(
+      AppPage.products: ProductsScreen(
         localProducts: _localProducts,
         catalog: _catalog,
-        onAddToLocal: (p) => _addProductToLocal(p),
+        onAddToLocal: _addProductToLocal,
         onAddToMenu: (p) =>
             _addMealToDate(Meal(product: p, weightGrams: 100), _selectedDate),
       ),
-      const ProfileScreen(),
-    ];
+      AppPage.profile: const ProfileScreen(),
+    };
 
+    // FIXME watch in build
+    final currentPage = context.watch<NavigationBloc>().state;
     return Scaffold(
-      body: pages[_currentIndex],
+      body: pages[currentPage],
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (i) => setState(() => _currentIndex = i),
+        selectedIndex: currentPage.index,
+        onDestinationSelected: (i) =>
+            context.read<NavigationBloc>().setPage(AppPage.values[i]),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.track_changes),
@@ -193,5 +125,103 @@ class _MainShellState extends State<MainShell> {
         ],
       ),
     );
+  }
+
+  final Map<String, List<Meal>> _mealsByDate = {
+    // today's date will be filled in initState
+  };
+
+  final List<ProductData> _localProducts = [
+    ProductData(
+      name: 'Авокадо',
+      kcalPer100g: 160,
+      protein: 2,
+      fat: 15,
+      carbs: 9,
+      keto: true,
+    ),
+    ProductData(
+      name: 'Куриная грудка',
+      kcalPer100g: 165,
+      protein: 31,
+      fat: 3.6,
+      carbs: 0,
+      keto: true,
+    ),
+    ProductData(
+      name: 'Овсянка',
+      kcalPer100g: 389,
+      protein: 13,
+      fat: 7,
+      carbs: 67,
+      keto: false,
+    ),
+  ];
+
+  final List<ProductData> _catalog = [
+    ProductData(
+      name: 'Лосось',
+      kcalPer100g: 208,
+      protein: 20,
+      fat: 13,
+      carbs: 0,
+      keto: true,
+    ),
+    ProductData(
+      name: 'Творог',
+      kcalPer100g: 98,
+      protein: 11,
+      fat: 4.3,
+      carbs: 3.4,
+      keto: false,
+    ),
+    ProductData(
+      name: 'Яйцо',
+      kcalPer100g: 155,
+      protein: 13,
+      fat: 11,
+      carbs: 1.1,
+      keto: true,
+    ),
+    ProductData(
+      name: 'Огурец',
+      kcalPer100g: 16,
+      protein: 0.7,
+      fat: 0.1,
+      carbs: 3.6,
+      keto: false,
+    ),
+  ];
+
+  String _dateKey(DateTime dt) => formatDate(dt);
+
+  void _addMealToDate(Meal meal, DateTime date) {
+    setState(() {
+      final key = _dateKey(date);
+      _mealsByDate.putIfAbsent(key, () => []);
+      _mealsByDate[key]!.add(meal);
+    });
+  }
+
+  void _removeMealFromDate(int index, DateTime date) {
+    setState(() {
+      final key = _dateKey(date);
+      _mealsByDate[key]!.removeAt(index);
+    });
+  }
+
+  void _addProductToLocal(ProductData p) {
+    setState(() {
+      if (!_localProducts.any((x) => x.name == p.name)) {
+        _localProducts.insert(0, p);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _journalBloc.close();
+    _trackingBloc.close();
+    super.dispose();
   }
 }
