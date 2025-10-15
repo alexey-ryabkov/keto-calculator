@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:keto_calculator/app/data/firestore.dart';
 import 'package:keto_calculator/app/firebase_options.dart';
@@ -43,6 +44,9 @@ Future<void> bootstrap(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   final fs = FirebaseFirestore.instance;
+
+  FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  await FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
 
   await AppUser.init();
 
