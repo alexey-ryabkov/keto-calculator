@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 export 'compute_daily_nutrition_targets.dart';
 export 'date_change_watcher.dart';
+export 'env.dart';
 
 String formatDate(DateTime dt) => DateFormat('dd.MM.yyyy').format(dt);
 
@@ -28,4 +29,17 @@ double toDouble(Object? v) {
   if (v is int) return v.toDouble();
   if (v is String) return double.tryParse(v.replaceAll(',', '.')) ?? 0.0;
   return 0.0;
+}
+
+int toInt(Object? v) {
+  if (v == null) return 0;
+  if (v is int) return v;
+  if (v is num) return v.toInt();
+  if (v is String) {
+    final i = int.tryParse(v);
+    if (i != null) return i;
+    final d = double.tryParse(v);
+    if (d != null) return d.toInt();
+  }
+  return 0;
 }
