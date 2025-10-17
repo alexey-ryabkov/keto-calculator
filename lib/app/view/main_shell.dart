@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keto_calculator/app/bloc/navigation_bloc.dart';
 import 'package:keto_calculator/app/models/models.dart';
-import 'package:keto_calculator/core/models/meal.dart';
+import 'package:keto_calculator/core/models/meal_mock.dart';
 import 'package:keto_calculator/core/models/product.dart';
 import 'package:keto_calculator/core/utils/utils.dart';
 import 'package:keto_calculator/features/menu/menu.dart';
@@ -23,12 +23,14 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   late final JournalBloc _journalBloc;
   late final TrackingBloc _trackingBloc;
+  late final MenuBloc _menuBloc;
   late DateTime _selectedDate;
 
   @override
   void initState() {
-    _trackingBloc = TrackingBloc();
     _journalBloc = JournalBloc();
+    _trackingBloc = TrackingBloc();
+    _menuBloc = MenuBloc();
 
     super.initState();
 
@@ -38,8 +40,8 @@ class _MainShellState extends State<MainShell> {
     _mealsByDate.putIfAbsent(
       todayKey,
       () => [
-        Meal(product: _localProducts[1], weightGrams: 150), // курица 150g
-        Meal(product: _localProducts[0], weightGrams: 100), // авокадо 100g
+        MealMock(product: _localProducts[1], weightGrams: 150), // курица 150g
+        MealMock(product: _localProducts[0], weightGrams: 100), // авокадо 100g
       ],
     );
   }
@@ -71,36 +73,25 @@ class _MainShellState extends State<MainShell> {
           child: const TrackingScreen(),
         ),
       ),
-      AppPage.menu: MenuScreen(
-        localMeals: _mealsByDate[_dateKey(_selectedDate)] ?? [],
-        localProducts: _localProducts,
-        onConsumeFromLocal: (product) {
-          _addMealToDate(
-            Meal(product: product, weightGrams: 100),
-            _selectedDate,
-          );
-        },
-        onDeleteMealAt: (index) => _removeMealFromDate(index, _selectedDate),
-        onAddMealPressed: () {
-          if (_localProducts.isNotEmpty) {
-            _addMealToDate(
-              Meal(product: _localProducts.first, weightGrams: 100),
-              _selectedDate,
-            );
-          }
-        },
+      AppPage.menu: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: _journalBloc),
+          BlocProvider.value(value: _menuBloc),
+        ],
+        child: MenuScreen(),
       ),
       AppPage.products: ProductsScreen(
         localProducts: _localProducts,
         catalog: _catalog,
         onAddToLocal: _addProductToLocal,
-        onAddToMenu: (p) =>
-            _addMealToDate(Meal(product: p, weightGrams: 100), _selectedDate),
+        onAddToMenu: (p) => _addMealToDate(
+          MealMock(product: p, weightGrams: 100),
+          _selectedDate,
+        ),
       ),
       AppPage.profile: const ProfileScreen(),
     };
 
-    // FIXME watch in build
     final currentPage = context.watch<NavigationBloc>().state;
     return Scaffold(
       body: pages[currentPage],
@@ -127,7 +118,7 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
-  final Map<String, List<Meal>> _mealsByDate = {
+  final Map<String, List<MealMock>> _mealsByDate = {
     // today's date will be filled in initState
   };
 
@@ -195,7 +186,7 @@ class _MainShellState extends State<MainShell> {
 
   String _dateKey(DateTime dt) => formatDate(dt);
 
-  void _addMealToDate(Meal meal, DateTime date) {
+  void _addMealToDate(MealMock meal, DateTime date) {
     setState(() {
       final key = _dateKey(date);
       _mealsByDate.putIfAbsent(key, () => []);
@@ -222,6 +213,7 @@ class _MainShellState extends State<MainShell> {
   void dispose() {
     _journalBloc.close();
     _trackingBloc.close();
+    _menuBloc.close();
     super.dispose();
   }
 }

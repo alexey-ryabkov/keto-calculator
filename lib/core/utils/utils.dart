@@ -23,6 +23,18 @@ DateTime? parseDateTime(Object? v) {
   return null;
 }
 
+bool? parseBool(dynamic v) {
+  if (v == null) return null;
+  if (v is bool) return v;
+  if (v is num) return v != 0;
+  if (v is String) {
+    final s = v.toLowerCase().trim();
+    if (s == 'true' || s == '1' || s == 'yes') return true;
+    if (s == 'false' || s == '0' || s == 'no') return false;
+  }
+  return null;
+}
+
 double toDouble(Object? v) {
   if (v == null) return 0.0;
   if (v is double) return v;

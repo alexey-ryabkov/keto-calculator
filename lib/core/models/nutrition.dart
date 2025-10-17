@@ -50,3 +50,26 @@ class ConsumableItem implements Consumable {
   double get kcal => _kcal ?? kcalByNutrients.values.reduce((a, b) => a + b);
   set kcal(double value) => _kcal = kcal;
 }
+
+mixin KetoFriendliness implements Consumable {
+  bool isKetoFriendly({bool isStrict = false, bool considerWeight = false}) {
+    final carbsRatio = (carbs * 4) / kcal;
+    final fatsRatio = (fats * 9) / kcal;
+    final weightFactor = considerWeight && weight != null && weight! < 100
+        ? (1 + (100 - weight!) / 400)
+        : 1.0;
+    return isStrict
+        ? carbsRatio * weightFactor < 0.05 && fatsRatio > 0.7
+        : carbsRatio * weightFactor < 0.1 && fatsRatio > 0.6;
+  }
+
+  double? get weight;
+  @override
+  double get proteins;
+  @override
+  double get fats;
+  @override
+  double get carbs;
+  @override
+  double get kcal;
+}
