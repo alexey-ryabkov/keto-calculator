@@ -38,8 +38,8 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
       'datetime': widget.date.toIso8601String(),
       'title': _titleC.text.trim(),
       'kcal': double.tryParse(_kcalC.text.replaceAll(',', '.')) ?? 0.0,
-      'protein': double.tryParse(_proteinC.text.replaceAll(',', '.')) ?? 0.0,
-      'fat': double.tryParse(_fatC.text.replaceAll(',', '.')) ?? 0.0,
+      'proteins': double.tryParse(_proteinC.text.replaceAll(',', '.')) ?? 0.0,
+      'fats': double.tryParse(_fatC.text.replaceAll(',', '.')) ?? 0.0,
       'carbs': double.tryParse(_carbC.text.replaceAll(',', '.')) ?? 0.0,
       'weightGrams': null,
       'id': null,
@@ -67,14 +67,6 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
               ),
               const SizedBox(height: 8),
               TextFormField(
-                controller: _kcalC,
-                decoration: const InputDecoration(labelText: 'Calories (kcal)'),
-                keyboardType: TextInputType.number,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Enter calories' : null,
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
                 controller: _proteinC,
                 decoration: const InputDecoration(labelText: 'Protein (g)'),
                 keyboardType: TextInputType.number,
@@ -96,6 +88,14 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
                 keyboardType: TextInputType.number,
                 validator: (v) =>
                     (v == null || v.trim().isEmpty) ? 'Enter carbs' : null,
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _kcalC,
+                decoration: const InputDecoration(labelText: 'Calories (kcal)'),
+                keyboardType: TextInputType.number,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Enter calories' : null,
               ),
               const SizedBox(height: 16),
               Row(

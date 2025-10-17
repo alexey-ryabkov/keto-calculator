@@ -28,14 +28,14 @@ class NutritionAnalytics extends StatelessWidget {
     return BlocBuilder<JournalBloc, JournalState>(
       builder: (context, state) {
         final {
-          'protein': totalProtein,
-          'fat': totalFat,
+          'proteins': totalProtein,
+          'fats': totalFat,
           'carbs': totalCarbs,
         } = context
             .read<JournalBloc>()
             .totals;
 
-        final totalNutrients = MealNutritrients(
+        final totalNutrients = ConsumableItem(
           proteins: totalProtein,
           fats: totalFat,
           carbs: totalCarbs,

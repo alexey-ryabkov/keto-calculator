@@ -8,7 +8,7 @@ class JournalBloc extends Cubit<JournalState> {
   JournalBloc() : super(JournalState.initial());
 
   Map<String, double> get totals => Map.fromIterable(
-    ['kcal', 'protein', 'fat', 'carbs'],
+    ['kcal', 'proteins', 'fats', 'carbs'],
     value: (k) => state.entries.fold(
       0.0,
       (sum, entry) => sum + (entry.toJson()[k] as num).toDouble(),

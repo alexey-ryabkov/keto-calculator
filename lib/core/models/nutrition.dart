@@ -17,27 +17,24 @@ abstract interface class Consumable {
   double get proteins;
   double get fats;
   double get carbs;
+  double get kcal;
 }
 
-class MealNutritrients implements Consumable {
-  const MealNutritrients({
+class ConsumableItem implements Consumable {
+  ConsumableItem({
     required this.proteins,
     required this.fats,
     required this.carbs,
-  });
-  factory MealNutritrients.fromConsumable(Consumable consumable) {
-    return MealNutritrients(
-      proteins: consumable.proteins,
-      fats: consumable.fats,
-      carbs: consumable.carbs,
-    );
-  }
+    double? kcal,
+  }) : _kcal = kcal;
+
+  double? _kcal;
   @override
-  final double proteins;
+  double proteins;
   @override
-  final double fats;
+  double fats;
   @override
-  final double carbs;
+  double carbs;
 
   static const _proteinKcal = 4;
   static const _fatKcal = 9;
@@ -49,5 +46,7 @@ class MealNutritrients implements Consumable {
     NutrientType.carb: carbs * _carbsKcal,
   };
 
-  double get kcal => kcalByNutrients.values.reduce((a, b) => a + b);
+  @override
+  double get kcal => _kcal ?? kcalByNutrients.values.reduce((a, b) => a + b);
+  set kcal(double value) => _kcal = kcal;
 }

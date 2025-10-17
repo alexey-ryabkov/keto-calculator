@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:keto_calculator/core/data/repository.dart';
 
 class FirestoreSourse {
@@ -237,4 +241,22 @@ extension FirestoreQueryBuilder on Query<Map<String, dynamic>> {
 
     return q;
   }
+}
+
+Future<String> getSavedFileUrl(String? filePath) =>
+    FirebaseStorage.instance.ref(filePath).getDownloadURL();
+
+Future<String?> saveFile(String filePath) async {
+  try {
+    final fileExt = filePath.split('.').last;
+    final storageRef = FirebaseStorage.instance.ref();
+    final photoRef = storageRef.child(
+      'files/${DateTime.now().millisecondsSinceEpoch}.$fileExt',
+    );
+    final uploadTask = await photoRef.putFile(File(filePath));
+    return await uploadTask.ref.getDownloadURL();
+  } catch (e) {
+    print('cant upload photo: $e');
+  }
+  return null;
 }

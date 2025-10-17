@@ -1,10 +1,10 @@
-import 'package:keto_calculator/core/data/firestore.dart';
+import 'package:keto_calculator/core/data/firebase.dart';
 import 'package:keto_calculator/core/models/app_user.dart';
 
 abstract final class FirestorePaths {
   static const _users = 'users';
   static const _journal = 'journal';
-  static const _meals = 'meals';
+  static const _menu = 'menu';
   static const _products = 'products';
 
   static String get _curUserRoot => '$_users/${AppUser.instance.id}';
@@ -14,10 +14,10 @@ abstract final class FirestorePaths {
       entryId != null && entryId.isNotEmpty
       ? '$_curUserRoot/$_journal/$entryId'
       : '$_curUserRoot/$_journal';
-  static String userMeal([String? mealId]) =>
+  static String userMenu([String? mealId]) =>
       mealId != null && mealId.isNotEmpty
-      ? '$_curUserRoot/$_meals/$mealId'
-      : '$_curUserRoot/$_meals';
+      ? '$_curUserRoot/$_menu/$mealId'
+      : '$_curUserRoot/$_menu';
   static String userProduct([String? productId]) =>
       productId != null && productId.isNotEmpty
       ? '$_curUserRoot/$_products/$productId'
@@ -41,14 +41,14 @@ class FirestoreJournal extends CollectionDocsFirestoreSource {
   String getDocPath(String itemId) => FirestorePaths.userJournal(itemId);
 }
 
-class FirestoreMeal extends CollectionDocsFirestoreSource {
-  FirestoreMeal(super._fs);
+class FirestoreMenu extends CollectionDocsFirestoreSource {
+  FirestoreMenu(super._fs);
 
   @override
-  String get collectionPath => FirestorePaths.userMeal();
+  String get collectionPath => FirestorePaths.userMenu();
 
   @override
-  String getDocPath(String itemId) => FirestorePaths.userMeal(itemId);
+  String getDocPath(String itemId) => FirestorePaths.userMenu(itemId);
 }
 
 class FirestoreProduct extends CollectionDocsFirestoreSource {
