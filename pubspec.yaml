@@ -9,15 +9,18 @@ environment:
 dependencies:
   bloc: ^9.0.0
   cloud_firestore: ^6.0.2
+  device_info_plus: ^12.1.0
   firebase_core: ^4.1.1
   firebase_storage: ^13.0.3
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  flutter_dotenv: ^6.0.0
   flutter_localizations:
     sdk: flutter
   get_it: ^8.2.0
   http: ^1.5.0
+  image_picker: ^1.2.0
   intl: ^0.20.2
   meta: ^1.16.0
   rxdart: ^0.28.0
@@ -26,7 +29,6 @@ dependencies:
 
 dev_dependencies:
   bloc_test: ^10.0.0
-  flutter_dotenv: ^6.0.0
   flutter_test:
     sdk: flutter
   mocktail: ^1.0.4
@@ -37,4 +39,3 @@ flutter:
   uses-material-design: true
   assets:
     - .env
-    - assets/images/test.png
