@@ -11,7 +11,7 @@ class App extends StatelessWidget {
       title: 'Keto Calculator',
       theme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: Colors.blue,
+        colorSchemeSeed: Colors.lightGreenAccent,
       ),
       home: const MainShell(),
     );

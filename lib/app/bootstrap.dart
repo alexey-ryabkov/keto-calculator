@@ -8,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:keto_calculator/app/data/firestore.dart';
+import 'package:keto_calculator/app/data/spoonacular_api.dart';
 import 'package:keto_calculator/app/firebase_options.dart';
 import 'package:keto_calculator/core/models/app_user.dart';
 import 'package:keto_calculator/core/utils/utils.dart';
@@ -57,6 +58,7 @@ Future<void> bootstrap(
   }
 
   await AppUser.init();
+  await SpoonacularApi.init();
 
   await Future.wait([
     ProfileRepository.init(FirestoreProfile(fs)),

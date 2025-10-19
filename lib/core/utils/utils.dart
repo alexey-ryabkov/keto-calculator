@@ -55,3 +55,11 @@ int toInt(Object? v) {
   }
   return 0;
 }
+
+T? tryOrNull<T>(T Function() fn) {
+  try {
+    return fn();
+  } catch (_) {
+    return null;
+  }
+}

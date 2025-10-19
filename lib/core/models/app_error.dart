@@ -1,44 +1,37 @@
 sealed class AppError implements Exception {
-  const AppError([this.message]);
+  const AppError([this.message, this.original]);
   final String? message;
+  final dynamic original;
+
+  @override
+  String toString() => '$runtimeType(message: $message, original: $original)';
 }
 
 final class NetworkError extends AppError {
-  const NetworkError([super.message]);
+  const NetworkError([super.message, super.original]);
 }
 
 final class UnexpectedError extends AppError {
-  const UnexpectedError([super.message]);
+  const UnexpectedError([super.message, super.original]);
 }
 
 final class ParsingError extends AppError {
-  const ParsingError([super.message]);
+  const ParsingError([super.message, super.original]);
 }
 
-final class ApiError extends AppError {
-  const ApiError(this.statusCode, [String? message]) : super(message);
+abstract class ApiError extends AppError {
+  const ApiError(this.statusCode, [super.message, super.original]);
   final int statusCode;
+
+  @override
+  String toString() =>
+      '$runtimeType(code: $statusCode, message: $message, original: $original)';
 }
 
-final class ServerApiError extends AppError {
-  const ServerApiError(this.statusCode, [String? message]) : super(message);
-  final int statusCode;
+final class ClientApiError extends ApiError {
+  const ClientApiError(super.statusCode, [super.message, super.original]);
 }
 
-// final class WrongRequestApiError extends ApiError {
-//   const RateLimitApiError([String? message]) : super(429, message);
-// }
-
-// final class UnexpectedApiError extends ApiError {
-//   const UnexpectedApiError([super.message]) : super(429, message);
-// }
-
-// TODO это переименовать
-// плюс эти ошибки характерны конкретно для апи spoonacular
-// final class PaymentRequiredError extends ApiError {
-//   const PaymentRequiredError([String? message]) : super(402, message);
-// }
-
-// final class NotFoundApiError extends ApiError {
-//   const NotFoundApiError([String? message]) : super(404, message);
-// }
+final class ServerApiError extends ApiError {
+  const ServerApiError(super.statusCode, [super.message, super.original]);
+}
