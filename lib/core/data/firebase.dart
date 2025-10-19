@@ -44,8 +44,9 @@ class FirestoreSourse {
     Query<Map<String, dynamic>> collectionRef = _getCollectionRef(
       collectionPath,
     );
-    collectionRef = collectionRef.applyFilters(filters, orderBy);
-    // collectionRef = collectionRef.orderBy(FieldPath.documentId);
+    if (filters != null || orderBy != null) {
+      collectionRef = collectionRef.applyFilters(filters, orderBy);
+    }
     if (size > 0) collectionRef = collectionRef.limit(size);
     if (afterId != null && afterId.isNotEmpty) {
       collectionRef = collectionRef.startAfter([afterId]);
@@ -63,7 +64,6 @@ class FirestoreSourse {
       // }
       return data;
     }).toList();
-    // return Future.sync(() => PaginatedItems([]));
     return PaginatedItems(
       items,
       lastItemId: snap.docs.isNotEmpty ? snap.docs.last.id : null,

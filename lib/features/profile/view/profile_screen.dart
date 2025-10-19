@@ -1,4 +1,3 @@
-// features/profile/view/profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +5,6 @@ import 'package:keto_calculator/core/models/app_user.dart';
 import 'package:keto_calculator/core/models/profile.dart';
 import 'package:keto_calculator/features/profile/bloc/profile_bloc.dart';
 import 'package:keto_calculator/features/profile/bloc/profile_state.dart';
-// import 'package:keto_calculator/features/profile/data/profile_repository.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -44,7 +42,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // context.read<ProfileBloc>().init()
   }
 
   @override
@@ -54,21 +51,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _heightC.dispose();
     super.dispose();
   }
-
-  // Future<void> _pickDate() async {
-  //   final now = DateTime.now();
-  //   final first = DateTime(1900);
-  //   final picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: _birthdate ?? DateTime(now.year - 25),
-  //     firstDate: first,
-  //     lastDate: now,
-  //     locale: const Locale('ru'),
-  //   );
-  //   if (picked != null) {
-  //     setState(() => _birthdate = picked);
-  //   }
-  // }
 
   Future<void> _onSave(ProfileState state) async {
     // FIXME
@@ -101,14 +83,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       orElse: () => Lifestyle.sedentary,
     );
   }
-  // Lifestyle _lifestyleFromLabel(String label) {
-  //   return Lifestyle.values.firstWhere(
-  //     (e) =>
-  //         e.name.replaceAll(RegExp(r'([A-Z])'), ' ').trim().toLowerCase() ==
-  //         label.toLowerCase(),
-  //     orElse: () => Lifestyle.sedentary,
-  //   );
-  // }
 
   DietType _dietTypeFromValue(String v) {
     return DietType.values.firstWhere(
@@ -123,25 +97,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _sexIndex = p.sex == Sex.male ? 0 : 1;
     _weightC.text = p.weightKg.toString();
     _heightC.text = p.heightCm.toString();
-    // _lifestyle = p.lifestyle.name == ''
-    //     ? _lifestyleOptions.first
-    //     : _titleFromLifestyle(p.lifestyle);
     _lifestyle = p.lifestyle.name;
     _dietType = p.dietType.name;
   }
-
-  // String _titleFromLifestyle(Lifestyle l) {
-  //   switch (l) {
-  //     case Lifestyle.sedentary:
-  //       return 'Sedentary';
-  //     case Lifestyle.lightlyActive:
-  //       return 'Lightly active';
-  //     case Lifestyle.active:
-  //       return 'Moderately active';
-  //     case Lifestyle.veryActive:
-  //       return 'Very active';
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -238,29 +196,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             }
                           },
                         ),
-                        /* InkWell(
-                          onTap: _pickDate,
-                          borderRadius: BorderRadius.circular(4),
-                          child: InputDecorator(
-                            isFocused: false,
-                            decoration: const InputDecoration(
-                              labelText: 'Birthdate',
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  _birthdate == null
-                                      ? 'Select date'
-                                      : DateFormat(
-                                          'dd.MM.yyyy',
-                                        ).format(_birthdate!),
-                                ),
-                                const Icon(Icons.calendar_today),
-                              ],
-                            ),
-                          ),
-                        ), */
                         const SizedBox(height: 12),
                         InputDecorator(
                           decoration: const InputDecoration(labelText: 'Sex'),

@@ -48,6 +48,7 @@ int toInt(Object? v) {
   if (v is int) return v;
   if (v is num) return v.toInt();
   if (v is String) {
+    // if (RegExp(r'^[+-]?\d+(\.\d+)?$').hasMatch(v.trim())) {
     final i = int.tryParse(v);
     if (i != null) return i;
     final d = double.tryParse(v);
@@ -61,5 +62,11 @@ T? tryOrNull<T>(T Function() fn) {
     return fn();
   } catch (_) {
     return null;
+  }
+}
+
+extension StringExtensions on String {
+  String capitalize() {
+    return '${toUpperCase()}${substring(1)}';
   }
 }

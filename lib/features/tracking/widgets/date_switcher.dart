@@ -25,10 +25,7 @@ class DateSwitcher extends StatelessWidget {
       children: [
         if (prevDate != null)
           IconButton(
-            onPressed: () {
-              trackingBloc.setDate(prevDate);
-              // journalBloc.loadForDate(prevDate);
-            },
+            onPressed: () => trackingBloc.setDate(prevDate),
             icon: const Icon(Icons.arrow_back),
           )
         else
@@ -42,10 +39,7 @@ class DateSwitcher extends StatelessWidget {
         ),
         if (nextDate != null)
           IconButton(
-            onPressed: () {
-              trackingBloc.setDate(nextDate);
-              // journalBloc.loadForDate(nextDate);
-            },
+            onPressed: () => trackingBloc.setDate(nextDate),
             icon: const Icon(Icons.arrow_forward),
           )
         else

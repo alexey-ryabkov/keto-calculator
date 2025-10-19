@@ -64,12 +64,4 @@ mixin KetoFriendliness implements Consumable {
   }
 
   double? get weight;
-  @override
-  double get proteins;
-  @override
-  double get fats;
-  @override
-  double get carbs;
-  @override
-  double get kcal;
 }

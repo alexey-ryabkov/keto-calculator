@@ -53,7 +53,7 @@ class JournalEntriesList extends StatelessWidget {
                         _date,
                       );
                     } else {
-                      // FIXME loadForDate уже вызывается в deleteEntry
+                      // FIXME loadForDate already in called in deleteEntry
                       context.read<JournalBloc>().loadForDate(
                         _date,
                       );
