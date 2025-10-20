@@ -1,102 +1,109 @@
+import 'package:keto_calculator/core/models/app_error.dart';
+import 'package:keto_calculator/core/models/nutrition.dart';
+import 'package:keto_calculator/core/utils/utils.dart';
+
 class ProductOffer {
   ProductOffer({
     required this.name,
-    this.image,
+    this.photo,
   });
 
   factory ProductOffer.fromJson(Map<String, dynamic> json) {
     return ProductOffer(
-      name: (json['name'] ?? '') as String,
-      image: (json['image'] as String?)?.isEmpty ?? true
-          ? null
-          : json['image'] as String?,
+      name: (json['name'] ?? 'Unknown product') as String,
+      photo: json['photo'] as String?,
     );
   }
 
   final String name;
-  final String? image;
+  final String? photo;
 
-  Map<String, dynamic> toJson() => {'name': name, 'image': image};
+  Map<String, dynamic> toJson() => {'name': name, 'image': photo};
 }
 
 class ProductItem extends ProductOffer {
   ProductItem({
     required super.name,
     required this.id,
-    super.image,
+    super.photo,
   });
   factory ProductItem.fromJson(Map<String, dynamic> json) {
     return ProductItem(
-      name: (json['name'] ?? '') as String,
-      image: (json['image'] as String?)?.isEmpty ?? true
-          ? null
-          : json['image'] as String?,
-      id: (json['id'] is int)
-          ? json['id'] as int
-          : int.parse((json['id'] ?? '0').toString()),
+      name: (json['name'] ?? 'Unknown product') as String,
+      photo: json['photo'] as String?,
+      id: json['id'] as String?,
     );
   }
 
-  final int id;
+  final String? id;
 
   @override
   Map<String, dynamic> toJson() => {...super.toJson(), 'id': id};
 }
 
-class ProductData extends ProductItem {
+class ProductData extends ProductItem with KetoFriendliness {
   ProductData({
     required super.name,
-    required this.kcalPer100g,
-    required this.protein,
-    required this.fat,
-    required this.carbs,
-    required this.keto,
-    super.id = 0,
-    super.image,
-  });
+    required double kcal,
+    required double proteins,
+    required double fats,
+    required double carbs,
+    double weightGrams = defProductWeightGrams,
+    super.photo,
+    super.id,
+  }) : _carbs = carbs,
+       _proteins = proteins,
+       _fats = fats,
+       _kcal = kcal,
+       _weightGrams = weightGrams {
+    if (weightGrams <= 0) {
+      throw const UnexpectedError('weightGrams must be positive number');
+    }
+  }
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
-    double findNutrient(List<dynamic>? nutrients, String key) {
-      if (nutrients == null) return 0;
-      try {
-        final node = nutrients.cast<Map<String, dynamic>?>().firstWhere(
-          (n) => (n?['name'] as String?)?.toLowerCase() == key.toLowerCase(),
-          orElse: () => null,
-        );
-        if (node == null) return 0;
-        final val = node['amount'];
-        if (val is num) return val.toDouble();
-        return double.tryParse(val.toString()) ?? 0;
-      } catch (_) {
-        return 0;
-      }
-    }
-
-    final nutrition = json['nutrition'] as Map<String, dynamic>?;
-    final nutrients = nutrition?['nutrients'] as List<dynamic>?;
-
-    final kcal = findNutrient(nutrients, 'Calories');
-    final protein = findNutrient(nutrients, 'Protein');
-    final fat = findNutrient(nutrients, 'Fat');
-    final carbs = findNutrient(nutrients, 'Carbohydrates');
-
+    final kcal = toDouble(json['kcal']);
     return ProductData(
-      name: json['name'] as String? ?? '',
-      image: json['image'] as String?,
-      id: (json['id'] is int)
-          ? json['id'] as int
-          : int.parse((json['id'] ?? '0').toString()),
-      kcalPer100g: kcal,
-      protein: protein,
-      fat: fat,
-      carbs: carbs,
-      keto: (json['keto'] as bool?) ?? false,
+      kcal: kcal,
+      id: json['id'] as String?,
+      name: (json['name'] as String?) ?? _defName(kcal),
+      proteins: toDouble(json['proteins']),
+      fats: toDouble(json['fats']),
+      carbs: toDouble(json['carbs']),
+      weightGrams: toDouble(json['weightGrams']),
+      photo: json['photo'] as String?,
     );
   }
 
-  final double kcalPer100g;
-  final double protein;
-  final double fat;
-  final double carbs;
-  final bool keto;
+  double _kcal;
+  double _proteins;
+  double _fats;
+  double _carbs;
+  double _weightGrams;
+  static const defProductWeightGrams = 100.00;
+
+  @override
+  double get kcal => _kcal;
+  @override
+  double get proteins => _proteins;
+  @override
+  double get fats => _fats;
+  @override
+  double get carbs => _carbs;
+  @override
+  double get weight => _weightGrams;
+  set weight(double value) {
+    if (value <= 0) return;
+    _kcal = (_kcal / _weightGrams) * value;
+    _proteins = (_proteins / _weightGrams) * value;
+    _fats = (_fats / _weightGrams) * value;
+    _carbs = (_carbs / _weightGrams) * value;
+    _weightGrams = value;
+  }
+
+  static String _defName(num kcal) => 'Product with ${kcal}kcal';
+
+  @override
+  String toString() =>
+      'ProductData(id: $id, name: $name, kcal: $kcal, weight, $weight';
 }

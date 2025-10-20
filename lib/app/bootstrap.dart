@@ -13,6 +13,7 @@ import 'package:keto_calculator/app/firebase_options.dart';
 import 'package:keto_calculator/core/models/app_user.dart';
 import 'package:keto_calculator/core/utils/utils.dart';
 import 'package:keto_calculator/features/menu/data/menu_repository.dart';
+import 'package:keto_calculator/features/products/data/products_repository.dart';
 import 'package:keto_calculator/features/profile/data/profile_repository.dart';
 import 'package:keto_calculator/features/tracking/data/journal_repository.dart';
 
@@ -58,13 +59,13 @@ Future<void> bootstrap(
   }
 
   await AppUser.init();
-  await SpoonacularApi.init();
 
   await Future.wait([
     ProfileRepository.init(FirestoreProfile(fs)),
     JournalRepository.init(FirestoreJournal(fs)),
     MenuRepository.init(FirestoreMenu(fs)),
-    // ProductRepository.init(FirestoreProduct(fs)),
+    ProductsRepository.init(FirestoreProduct(fs)),
+    SpoonacularApi.init(),
   ]);
 
   runApp(await builder(env));
