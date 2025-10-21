@@ -31,7 +31,7 @@ class ProductItem extends ProductOffer {
     return ProductItem(
       name: (json['name'] ?? 'Unknown product') as String,
       photo: json['photo'] as String?,
-      id: json['id'] as String?,
+      id: json['id']?.toString(),
     );
   }
 
@@ -65,7 +65,7 @@ class ProductData extends ProductItem with KetoFriendliness {
     final kcal = toDouble(json['kcal']);
     return ProductData(
       kcal: kcal,
-      id: json['id'] as String?,
+      id: json['id']?.toString(),
       name: (json['name'] as String?) ?? _defName(kcal),
       proteins: toDouble(json['proteins']),
       fats: toDouble(json['fats']),
