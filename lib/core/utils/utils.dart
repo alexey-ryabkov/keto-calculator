@@ -67,6 +67,6 @@ T? tryOrNull<T>(T Function() fn) {
 
 extension StringExtensions on String {
   String capitalize() {
-    return '${toUpperCase()}${substring(1)}';
+    return '${substring(0, 1).toUpperCase()}${substring(1)}';
   }
 }
