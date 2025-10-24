@@ -65,8 +65,22 @@ T? tryOrNull<T>(T Function() fn) {
   }
 }
 
+String camelCaseToHumanReadable(String str) {
+  final buf = StringBuffer();
+  for (var i = 0; i < str.length; i++) {
+    final c = str[i];
+    if (i > 0 && c.toUpperCase() == c) buf.write(' ');
+    buf.write(i == 0 ? c.toUpperCase() : c.toLowerCase());
+  }
+  return buf.toString();
+}
+
 extension StringExtensions on String {
   String capitalize() {
     return '${substring(0, 1).toUpperCase()}${substring(1)}';
   }
+}
+
+extension LabeledEnum on Enum {
+  String get label => camelCaseToHumanReadable(name);
 }
