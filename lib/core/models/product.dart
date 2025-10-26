@@ -18,7 +18,13 @@ class ProductOffer {
   final String name;
   final String? photo;
 
-  Map<String, dynamic> toJson() => {'name': name, 'image': photo};
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    if (photo != null) 'photo': photo,
+  };
+
+  @override
+  String toString() => 'ProductOffer(name: $name)';
 }
 
 class ProductItem extends ProductOffer {
@@ -38,10 +44,18 @@ class ProductItem extends ProductOffer {
   final String? id;
 
   @override
-  Map<String, dynamic> toJson() => {...super.toJson(), 'id': id};
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    if (id != null) 'id': id,
+  };
+
+  @override
+  String toString() => 'ProductItem(id: $id, name: $name)';
 }
 
-class ProductData extends ProductItem with KetoFriendliness {
+class ProductData extends ProductItem
+    with KetoFriendliness
+    implements StoredConsumable {
   ProductData({
     required super.name,
     required double kcal,
@@ -100,6 +114,16 @@ class ProductData extends ProductItem with KetoFriendliness {
     _carbs = (_carbs / _weightGrams) * value;
     _weightGrams = value;
   }
+
+  @override
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'kcal': _kcal,
+    'proteins': _proteins,
+    'fats': _fats,
+    'carbs': _carbs,
+    'weightGrams': _weightGrams,
+  };
 
   static String _defName(num kcal) => 'Product with ${kcal}kcal';
 
