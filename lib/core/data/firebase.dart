@@ -28,7 +28,7 @@ class FirestoreSourse {
     final snap = await _getCollectionRef(collectionPath).get();
     return snap.docs.map((snapDoc) {
       final data = Map<String, dynamic>.from(snapDoc.data());
-      data['id'] = snapDoc.id;
+      data['id'] ??= snapDoc.id;
       return data;
     }).toList();
   }
@@ -58,7 +58,7 @@ class FirestoreSourse {
       final data = Map<String, dynamic>.from(
         snapDoc.data(),
       );
-      data['id'] = snapDoc.id;
+      data['id'] ??= snapDoc.id;
       // if (includeId && !fields.containsKey('id')) {
       //   fields['id'] = snapDoc.id;
       // }
