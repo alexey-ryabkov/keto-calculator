@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keto_calculator/app/data/spoonacular_api.dart';
+import 'package:keto_calculator/app/widgets/product_tile.dart';
 import 'package:keto_calculator/core/models/product.dart';
-import 'package:keto_calculator/core/utils/utils.dart';
+import 'package:keto_calculator/features/products/products.dart';
 import 'package:rxdart/rxdart.dart';
 
 const _minInputLettersCnt = 3;
@@ -19,15 +21,14 @@ class SearchState {
   @override
   String toString() =>
       'SearchState(loading: $loading, count: ${items?.length ?? 0}';
-  // 'items: $items)';
 }
 
 class SearchScreen extends StatefulWidget {
   SearchScreen({required this.onSave, super.key});
 
-  final void Function(ProductData data) onSave;
+  final Future<void> Function(ProductData data) onSave;
 
-  // TODO by props?
+  // TODO by props to use abstract ProductApi
   final SpoonacularApi api = SpoonacularApi.instance;
 
   @override
@@ -53,9 +54,8 @@ class _SearchScreenState extends State<SearchScreen> {
     super.initState();
 
     _searching = _searchQuery$
-        // FIXME
-        .distinct()
         .debounceTime(const Duration(milliseconds: _searchInputDebounceTime))
+        .distinct()
         .switchMap(_searchStatesStream)
         .listen((searchState) {
           debugPrint(searchState.toString());
@@ -65,14 +65,6 @@ class _SearchScreenState extends State<SearchScreen> {
             _productsLoading = searchState.loading;
           });
         });
-
-    // _searchInputFocusNode.addListener(() {
-    //   if (!_searchInputFocusNode.hasFocus) {
-    //     // ...
-    //   } else if (_foundProducts.isNotEmpty || _productsLoading) {
-    //     // ...
-    //   }
-    // });
   }
 
   @override
@@ -81,15 +73,18 @@ class _SearchScreenState extends State<SearchScreen> {
     _searchQuery$.close();
     _searchInputCtrl.dispose();
     _searchInputFocusNode.dispose();
-    // _hideSearchResPanel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final savedProducts = context.read<ProductsBloc>().state.items;
+    final savedProductIds =
+        (savedProducts.map((item) => item.id).toSet().toList()
+          ..removeWhere((v) => v == null));
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Products reference'),
+        title: const Text('Products Reference'),
       ),
       body: Column(
         children: [
@@ -141,103 +136,96 @@ class _SearchScreenState extends State<SearchScreen> {
             )
           else
             Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.zero,
-                // shrinkWrap: true,
-                itemCount: _foundProducts!.length,
-                separatorBuilder: (_, _) => const Divider(height: 1),
-                itemBuilder: (context, i) {
-                  final product = _foundProducts![i];
-                  final loading = _loadingDetailProdDataIds.contains(
-                    product.id,
-                  );
-                  final hasDetails = _detailProductsDataCache.containsKey(
-                    product.id,
-                  );
-                  final productDetails = hasDetails
-                      ? _detailProductsDataCache[product.id]
-                      : null;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (hasDetails)
-                          if (productDetails!.photo != null)
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
-                              child: Image.network(
-                                productDetails.photo!,
-                                width: 64,
-                                height: 64,
-                                fit: BoxFit.cover,
-                              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                child: ListView.separated(
+                  padding: EdgeInsets.zero,
+                  // shrinkWrap: true,
+                  itemCount: _foundProducts!.length,
+                  separatorBuilder: (_, _) => const Divider(height: 1),
+                  itemBuilder: (context, i) {
+                    final product = _foundProducts![i];
+                    final productId = product.id!;
+                    final loading = _loadingDetailProdDataIds.contains(
+                      product.id,
+                    );
+                    final hasSaved = savedProductIds.contains(productId);
+                    final hasDetails =
+                        hasSaved ||
+                        _detailProductsDataCache.containsKey(
+                          productId,
+                        );
+                    final details = hasSaved
+                        ? savedProducts.firstWhere(
+                            (product) => productId == product.id,
+                          )
+                        : hasDetails
+                        ? _detailProductsDataCache[productId]
+                        : null;
+
+                    return ProductTile(
+                      item: product,
+                      details: details,
+                      trailing: hasSaved
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Saved',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsetsGeometry.directional(
+                                    start: 3,
+                                    end: 16,
+                                  ),
+                                  child: Icon(
+                                    Icons.check,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    size: 18,
+                                  ),
+                                ),
+                              ],
                             )
-                          else
-                            // TODO like in menu
-                            Container(
-                              width: 64,
-                              height: 64,
-                              alignment: Alignment.center,
-                              child: const Icon(Icons.fastfood),
+                          : hasDetails
+                          ? TextButton.icon(
+                              icon: const Icon(Icons.save),
+                              iconAlignment: IconAlignment.end,
+                              label: const Text('Save'),
+                              onPressed: () async {
+                                await widget.onSave(details!);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Product saved'),
+                                  ),
+                                );
+                              },
+                            )
+                          : loading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : TextButton.icon(
+                              icon: const Icon(Icons.download),
+                              iconAlignment: IconAlignment.end,
+                              label: const Text('Load'),
+                              onPressed: () => _loadProductDetail(product),
                             ),
-                        if (hasDetails) const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                product.name.capitalize(),
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              if (hasDetails)
-                                Text(
-                                  'protein '
-                                  '${productDetails!.proteins.toStringAsFixed(1)}'
-                                  'g • fat '
-                                  '${productDetails.fats.toStringAsFixed(1)}'
-                                  'g • carb '
-                                  '${productDetails.carbs.toStringAsFixed(1)}g',
-                                  // style: Theme.of(context).textTheme.caption
-                                ),
-                              if (hasDetails)
-                                Text(
-                                  '${productDetails!.kcal.toStringAsFixed(0)}'
-                                  'kcal / 100g',
-                                ),
-                            ],
-                          ),
-                        ),
-                        if (hasDetails) const SizedBox(width: 8),
-                        if (hasDetails)
-                          TextButton.icon(
-                            icon: const Icon(Icons.save),
-                            iconAlignment: IconAlignment.end,
-                            label: const Text('Save'),
-                            onPressed: () async =>
-                                widget.onSave(productDetails!),
-                          )
-                        else if (loading)
-                          const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        else
-                          TextButton.icon(
-                            icon: const Icon(Icons.download),
-                            iconAlignment: IconAlignment.end,
-                            label: const Text('Load'),
-                            onPressed: () => _loadProductDetail(product),
-                          ),
-                      ],
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
         ],
@@ -292,30 +280,10 @@ class _SearchScreenState extends State<SearchScreen> {
       (items) async {
         _foundProductsCache[query] = items;
         await handleRequestResult(items);
-        // if (loaderShown) {
-        //   await Future<void>.delayed(
-        //     const Duration(milliseconds: _showingLoaderMinTime),
-        //   );
-        // }
-        // if (!streamCtrl.isClosed) {
-        //   streamCtrl.add(SearchState(items: items, loading: false));
-        // }
-        // await streamCtrl.close();
       },
       onError: (Object e) async {
         debugPrint('requestStream error: $e');
-
         await handleRequestResult([]);
-
-        // if (loaderShown) {
-        //   await Future<void>.delayed(
-        //     const Duration(milliseconds: _showingLoaderMinTime),
-        //   );
-        // }
-        // if (!streamCtrl.isClosed) {
-        //   streamCtrl.add(const SearchState(items: [], loading: false));
-        // }
-        // await streamCtrl.close();
       },
     );
     streamCtrl.onCancel = () async {
@@ -339,9 +307,7 @@ class _SearchScreenState extends State<SearchScreen> {
     try {
       data = await widget.api.getProductData(item.id!);
       _detailProductsDataCache[item.id!] = data!;
-      // debugPrint('!!!product!!!');
       if (mounted) {
-        // debugPrint('!!!set state after loading product!!!');
         setState(() {
           _loadingDetailProdDataIds.remove(item.id);
         });
@@ -365,7 +331,6 @@ class _SearchScreenState extends State<SearchScreen> {
       _foundProducts = null;
       _productsLoading = false;
     });
-    // _hideSearchResPanel();
     _searchInputFocusNode.requestFocus();
   }
 }

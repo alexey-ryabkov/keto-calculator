@@ -15,6 +15,7 @@ const _imagesUrl =
     'https://img.spoonacular.com/ingredients_{size}x{size}/{name}';
 const _apiKeyVarName = 'SPOONACULAR_KEY';
 const _defSorting = {
+  // TODO more relevant?
   'sort': 'calories',
   'sortDirection': 'asc',
 };

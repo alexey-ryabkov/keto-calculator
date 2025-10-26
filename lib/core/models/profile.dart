@@ -19,15 +19,10 @@ class Profile {
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
-    DateTime? bd;
     final bdt = json['birthdate'];
-    if (bdt is Timestamp) {
-      bd = bdt.toDate();
-    } else {
-      // if (bdt is String) {
-      // FIXME
-      bd = DateTime.tryParse(bdt as String);
-    }
+    final bd = bdt is Timestamp
+        ? bdt.toDate()
+        : DateTime.tryParse(bdt as String);
 
     var sex = Sex.male;
     final s = json['sex'] as String?;

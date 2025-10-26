@@ -75,6 +75,9 @@ String camelCaseToHumanReadable(String str) {
   return buf.toString();
 }
 
+String formatNumber(num value, {int fixed = 1}) =>
+    value % 1 == 0 ? value.toInt().toString() : value.toStringAsFixed(fixed);
+
 extension StringExtensions on String {
   String capitalize() {
     return '${substring(0, 1).toUpperCase()}${substring(1)}';

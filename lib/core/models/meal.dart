@@ -3,7 +3,7 @@ import 'package:keto_calculator/core/models/app_error.dart';
 import 'package:keto_calculator/core/models/nutrition.dart';
 import 'package:keto_calculator/core/utils/utils.dart';
 
-class Meal with KetoFriendliness {
+class Meal with KetoFriendliness implements StoredConsumable {
   Meal({
     required this.created,
     required this.name,
@@ -67,9 +67,12 @@ class Meal with KetoFriendliness {
   }
 
   final DateTime created;
-  final String name;
   final int? consumedCnt;
+  @override
+  final String name;
+  @override
   final String? photo;
+  @override
   final String? id;
   double _kcal;
   double _proteins;

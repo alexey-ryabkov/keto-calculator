@@ -29,7 +29,6 @@ class _AddMealFormState extends State<AddMealForm> {
   ConsumableItem? _consumable;
   bool _canSubmit = false;
   bool _suppressKcalListener = false;
-  // TODO XFile ?
   File? _pickedImage;
 
   @override
@@ -139,7 +138,7 @@ class _AddMealFormState extends State<AddMealForm> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _canSubmit ? _onAdd : null,
+                      onPressed: _canSubmit ? _add : null,
                       child: const Text('Add'),
                     ),
                   ),
@@ -153,7 +152,7 @@ class _AddMealFormState extends State<AddMealForm> {
   }
 
   // TODO preloader for button
-  Future<void> _onAdd() async {
+  Future<void> _add() async {
     final weight = _parsePositive(_weightCtrl.text);
     if (!_formKey.currentState!.validate() ||
         _consumable == null ||

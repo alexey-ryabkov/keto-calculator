@@ -1,9 +1,11 @@
-import 'dart:async';
+// import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:keto_calculator/app/widgets/product_tile.dart';
 import 'package:keto_calculator/core/models/journal_entry.dart';
-import 'package:keto_calculator/core/models/meal.dart';
+import 'package:keto_calculator/core/utils/utils.dart';
+// import 'package:keto_calculator/core/models/meal.dart';
 import 'package:keto_calculator/features/menu/bloc/menu_state.dart';
 import 'package:keto_calculator/features/menu/menu.dart';
 import 'package:keto_calculator/features/tracking/bloc/journal_bloc.dart';
@@ -35,10 +37,9 @@ class MenuList extends StatelessWidget {
               separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, i) {
                 final meal = menu[i];
-                final Meal(:id, :name, :photo, :weight) = meal;
                 return Dismissible(
                   key: ValueKey(
-                    id!,
+                    meal.id!,
                     // ?? meal.created.toIso8601String(),
                   ),
                   direction: DismissDirection.endToStart,
@@ -53,76 +54,25 @@ class MenuList extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  onDismissed: (_) => context.read<MenuBloc>().deleteMeal(id),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      radius: 40,
-                      backgroundImage: photo != null
-                          ? NetworkImage(photo)
-                          : null,
-                      child: photo == null
-                          ? Icon(
-                              Icons.restaurant_outlined,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.surface,
-                              size: 60,
-                            )
-                          : null,
-                    ),
-                    title: Text(name),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('${meal.kcal} kcal on $weight'),
-                        if (meal.isKetoFriendly())
-                          Container(
-                            margin: const EdgeInsets.only(top: 4),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.tertiaryContainer,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  // Icons.eco,
-                                  // Icons.local_florist,
-                                  Icons.thumb_up_alt_outlined,
-                                  size: 14,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onTertiaryContainer,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'keto',
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onTertiaryContainer,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
+                  onDismissed: (_) =>
+                      context.read<MenuBloc>().deleteMeal(meal.id!),
+                  child: ProductTile(
+                    details: meal,
                     trailing: TextButton.icon(
                       icon: const Icon(Icons.local_dining_outlined),
                       iconAlignment: IconAlignment.end,
-                      label: const Text('Consume'),
-                      onPressed: () async {
-                        // TODO
+                      label: const Text('Eat'),
+                      onPressed: () {
+                        jounalBloc.addEntry(
+                          JournalEntry.fromConsumable(
+                            meal,
+                            title:
+                                '${formatNumber(meal.weight)}g of ${meal.name}',
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Journal entry added')),
+                        );
                       },
                     ),
                   ),

@@ -47,19 +47,12 @@ class _MenuScreenState extends State<MenuScreen> {
       builder: (context, state) {
         return SafeArea(
           child: Scaffold(
-            body: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  Align(
-                    child: Text(
-                      'Meals menu',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                  const Expanded(child: MenuList()),
-                ],
-              ),
+            appBar: AppBar(
+              title: const Text('Meals Menu'),
+            ),
+            body: const Padding(
+              padding: EdgeInsets.all(16),
+              child: MenuList(),
             ),
             floatingActionButton: FloatingActionButton.extended(
               onPressed: () => showAddMealModal(context),

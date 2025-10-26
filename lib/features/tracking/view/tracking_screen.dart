@@ -11,15 +11,14 @@ import 'package:keto_calculator/features/tracking/widgets/journal_entries_list.d
 import 'package:keto_calculator/features/tracking/widgets/journal_entry_form.dart';
 import 'package:keto_calculator/features/tracking/widgets/nutrition_analytics.dart';
 
-void showAddEntryModal(BuildContext context, DateTime date) {
+void showAddEntryModal(BuildContext context, DateTime selectedDate) {
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     builder: (ctx) {
       return JournalEntryForm(
-        date: date,
         onSubmit: (entry) {
-          context.read<JournalBloc>().addEntry(entry, reloadDate: date);
+          context.read<JournalBloc>().addEntry(entry, reloadDate: selectedDate);
           Navigator.of(ctx).pop();
         },
       );
@@ -47,37 +46,38 @@ class TrackingScreen extends StatelessWidget {
 
     return BlocBuilder<TrackingBloc, TrackingState>(
       builder: (context, state) {
+        final JournalBloc(:hasEntries) = context.read<JournalBloc>();
         final TrackingState(:selectedDate) = state;
         return SafeArea(
           child: isProfileNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Scaffold(
-                    body: Column(
+              ? Scaffold(
+                  body: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
                       children: [
                         DateSwitcher(),
-                        const SizedBox(height: 8),
+                        if (hasEntries) const SizedBox(height: 8),
                         const NutritionAnalytics(),
-                        const SizedBox(height: 22),
+                        const SizedBox(height: 20),
                         Align(
                           child: Text(
                             'Food Journal',
-                            style: Theme.of(context).textTheme.titleMedium,
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Expanded(child: JournalEntriesList(selectedDate)),
                       ],
                     ),
-                    floatingActionButton: state.isSelectedDateToday
-                        ? FloatingActionButton.extended(
-                            onPressed: () =>
-                                showAddEntryModal(context, selectedDate),
-                            label: const Text('Add entry'),
-                            icon: const Icon(Icons.add),
-                          )
-                        : null,
                   ),
+                  floatingActionButton: state.isSelectedDateToday
+                      ? FloatingActionButton.extended(
+                          onPressed: () =>
+                              showAddEntryModal(context, selectedDate),
+                          label: const Text('Add entry'),
+                          icon: const Icon(Icons.add),
+                        )
+                      : null,
                 )
               : Center(
                   child: ConstrainedBox(

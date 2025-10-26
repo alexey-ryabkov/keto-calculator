@@ -37,7 +37,8 @@ abstract class HttpApi {
       final response = await _client.get(uri).timeout(timeout);
 
       final code = response.statusCode;
-      print('uri $uri, code $code, body ${response.body}');
+      // print('uri $uri, code $code');
+      // print('uri $uri, code $code, body ${response.body}');
       if (code >= 200 && code < 300) {
         try {
           return json.decode(response.body) as T;

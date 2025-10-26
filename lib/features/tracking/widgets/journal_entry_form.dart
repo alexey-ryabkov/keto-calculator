@@ -3,11 +3,11 @@ import 'package:keto_calculator/core/models/journal_entry.dart';
 
 class JournalEntryForm extends StatefulWidget {
   const JournalEntryForm({
-    required this.date,
+    // required this.selectedDate,
     required this.onSubmit,
     super.key,
   });
-  final DateTime date;
+  // final DateTime selectedDate;
   final void Function(JournalEntry entry) onSubmit;
 
   @override
@@ -32,10 +32,10 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
     super.dispose();
   }
 
-  void _onAdd() {
+  void _add() {
     if (!_formKey.currentState!.validate()) return;
     final e = JournalEntry.fromJson({
-      'datetime': widget.date.toIso8601String(),
+      'datetime': DateTime.now(), // widget.date.toIso8601String(),
       'title': _titleC.text.trim(),
       'kcal': double.tryParse(_kcalC.text.replaceAll(',', '.')) ?? 0.0,
       'proteins': double.tryParse(_proteinC.text.replaceAll(',', '.')) ?? 0.0,
@@ -102,7 +102,7 @@ class _JournalEntryFormState extends State<JournalEntryForm> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _onAdd,
+                      onPressed: _add,
                       child: const Text('Add'),
                     ),
                   ),

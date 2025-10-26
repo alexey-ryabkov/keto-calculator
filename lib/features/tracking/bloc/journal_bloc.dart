@@ -15,6 +15,8 @@ class JournalBloc extends Cubit<JournalState> {
     ),
   );
 
+  bool get hasEntries => state.entries.isNotEmpty;
+
   Future<void> loadForDate(DateTime date) async {
     emit(state.copyWith(status: JournalStatus.loading));
     try {

@@ -48,62 +48,74 @@ class NutritionAnalytics extends StatelessWidget {
             totalCalories > 0 ? nutrientKcal / totalCalories : 0.0,
           ),
         );
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 140,
-                  height: 140,
-                  child: PieChartWidget(
-                    data: {
-                      'Proteins':
-                          kcalPercentsByNutrients[NutrientType.protein] ?? 0,
-                      'Fats': kcalPercentsByNutrients[NutrientType.fat] ?? 0,
-                      'Carbs': kcalPercentsByNutrients[NutrientType.carb] ?? 0,
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        return totalCalories > 0
+            ? Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
                     children: [
-                      MetricRow(
-                        label: 'Calories',
-                        value: totalCalories.round().toString(),
-                        status: _statusForKcal(targetCalories, totalCalories),
+                      SizedBox(
+                        width: 140,
+                        height: 140,
+                        child: PieChartWidget(
+                          data: {
+                            'Proteins':
+                                kcalPercentsByNutrients[NutrientType.protein] ??
+                                0,
+                            'Fats':
+                                kcalPercentsByNutrients[NutrientType.fat] ?? 0,
+                            'Carbs':
+                                kcalPercentsByNutrients[NutrientType.carb] ?? 0,
+                          },
+                        ),
                       ),
-                      const SizedBox(height: 6),
-                      MacroRow(
-                        label: 'Proteins',
-                        grams: totalProtein,
-                        percentOfMacros:
-                            kcalPercentsByNutrients[NutrientType.protein] ?? 0,
-                        targetPercent: targetProteinPercent,
-                      ),
-                      MacroRow(
-                        label: 'Fats',
-                        grams: totalFat,
-                        percentOfMacros:
-                            kcalPercentsByNutrients[NutrientType.fat] ?? 0,
-                        targetPercent: targetFatPercent,
-                      ),
-                      MacroRow(
-                        label: 'Carbs',
-                        grams: totalCarbs,
-                        percentOfMacros:
-                            kcalPercentsByNutrients[NutrientType.carb] ?? 0,
-                        targetPercent: targetCarbsPercent,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            MetricRow(
+                              label: 'Calories',
+                              value: totalCalories.round().toString(),
+                              status: _statusForKcal(
+                                targetCalories,
+                                totalCalories,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            MacroRow(
+                              label: 'Proteins',
+                              grams: totalProtein,
+                              percentOfMacros:
+                                  kcalPercentsByNutrients[NutrientType
+                                      .protein] ??
+                                  0,
+                              targetPercent: targetProteinPercent,
+                            ),
+                            MacroRow(
+                              label: 'Fats',
+                              grams: totalFat,
+                              percentOfMacros:
+                                  kcalPercentsByNutrients[NutrientType.fat] ??
+                                  0,
+                              targetPercent: targetFatPercent,
+                            ),
+                            MacroRow(
+                              label: 'Carbs',
+                              grams: totalCarbs,
+                              percentOfMacros:
+                                  kcalPercentsByNutrients[NutrientType.carb] ??
+                                  0,
+                              targetPercent: targetCarbsPercent,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
+              )
+            : const SizedBox.shrink();
       },
     );
   }

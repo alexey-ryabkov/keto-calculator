@@ -65,3 +65,9 @@ mixin KetoFriendliness implements Consumable {
 
   double? get weight;
 }
+
+abstract interface class StoredConsumable with KetoFriendliness {
+  String get name;
+  String? get id;
+  String? get photo;
+}

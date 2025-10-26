@@ -29,13 +29,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   void _openSearch(BuildContext context) {
+    final productsBloc = context.read<ProductsBloc>();
     Navigator.push(
       context,
       MaterialPageRoute<void>(
-        builder: (context) => SearchScreen(
-          onSave: (_) {
-            print('it will be saved!');
-          },
+        builder: (context) => BlocProvider.value(
+          value: productsBloc,
+          child: SearchScreen(
+            onSave: productsBloc.saveProduct,
+          ),
         ),
         fullscreenDialog: true,
       ),
@@ -48,6 +50,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
       builder: (context, state) {
         return SafeArea(
           child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Saved Products'),
+            ),
             body: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -57,19 +62,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     child: const AbsorbPointer(
                       child: TextField(
                         decoration: InputDecoration(
-                          hintText: 'Search product',
+                          hintText: 'Search product in reference',
                           prefixIcon: Icon(Icons.search),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Align(
-                    child: Text(
-                      'Saved products',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
                   const Expanded(child: ProductsList()),
                 ],
               ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:keto_calculator/app/utils/utils.dart';
 import 'package:keto_calculator/features/tracking/bloc/journal_bloc.dart';
 import 'package:keto_calculator/features/tracking/bloc/journal_state.dart';
 
@@ -12,6 +14,7 @@ class JournalEntriesList extends StatelessWidget {
     return BlocBuilder<JournalBloc, JournalState>(
       builder: (context, state) {
         final JournalState(:entries, :status) = state;
+
         switch (status) {
           case JournalStatus.loading:
             return const Center(child: CircularProgressIndicator());
@@ -29,10 +32,13 @@ class JournalEntriesList extends StatelessWidget {
               itemCount: entries.length,
               separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, i) {
-                final e = entries[i];
+                final entry = entries[i];
+                final (formatedNutrients, formatedKcal) = formatNutrients(
+                  entry,
+                );
                 return Dismissible(
                   key: ValueKey(
-                    e.id ?? e.datetime.toIso8601String(),
+                    entry.id ?? entry.datetime.toIso8601String(),
                   ),
                   direction: DismissDirection.endToStart,
                   background: Container(
@@ -47,9 +53,9 @@ class JournalEntriesList extends StatelessWidget {
                     ),
                   ),
                   onDismissed: (_) {
-                    if (e.id != null) {
+                    if (entry.id != null) {
                       context.read<JournalBloc>().deleteEntry(
-                        e.id!,
+                        entry.id!,
                         _date,
                       );
                     } else {
@@ -60,19 +66,42 @@ class JournalEntriesList extends StatelessWidget {
                     }
                   },
                   child: ListTile(
-                    leading: CircleAvatar(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Text(
-                        e.title.isNotEmpty ? e.title[0] : '?',
+                        DateFormat('HH:mm').format(entry.datetime),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                        ),
                       ),
                     ),
-                    title: Text(e.title),
-                    subtitle: Text(
-                      '${e.kcal.round()} kcal • ${e.proteins} / ${e.fats} / ${e.carbs}',
+                    title: Text(
+                      entry.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
+                    subtitle: Text(formatedNutrients),
                     trailing: Text(
-                      e.weightGrams != null
-                          ? '${e.weightGrams?.round() ?? 0} g'
-                          : '',
+                      '${entry.kcal.round()} kcal',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 );
