@@ -74,18 +74,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               state.status == ProfileStatus.loading ||
               state.status == ProfileStatus.initial;
           return Scaffold(
-            // appBar: AppBar(
-            //   title: const Text('Profile'),
-            //   actions: [
-            //     TextButton.icon(
-            //       icon: const Icon(Icons.settings),
-            //       iconAlignment: IconAlignment.end,
-            //       label: const Text('Preferences'),
-            //       onPressed: _openPreferences,
-            //     ),
-            //   ],
-            //   centerTitle: false,
-            // ),
             appBar: AppBar(
               title: const Text('Profile'),
               actions: [
@@ -285,9 +273,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (bloc.isProfileNotEmpty) {
-      await bloc.createProfile(profile);
-    } else {
       await bloc.saveProfile(profile);
+    } else {
+      await bloc.createProfile(profile);
     }
   }
 
