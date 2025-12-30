@@ -11,7 +11,7 @@ dependencies:
   cloud_firestore: ^6.1.1
   device_info_plus: ^12.3.0
   firebase_core: ^4.3.0
-  firebase_storage: ^13.0.3
+  firebase_storage: ^13.0.5
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
