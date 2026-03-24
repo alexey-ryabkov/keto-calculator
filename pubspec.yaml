@@ -10,7 +10,7 @@ dependencies:
   bloc: ^9.2.0
   cloud_firestore: ^6.1.2
   device_info_plus: ^12.3.0
-  firebase_core: ^4.4.0
+  firebase_core: ^4.6.0
   firebase_storage: ^13.2.0
   flutter:
     sdk: flutter
