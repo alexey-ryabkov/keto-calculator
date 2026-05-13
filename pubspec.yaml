@@ -7,7 +7,7 @@ environment:
   sdk: ^3.8.0
 
 dependencies:
-  bloc: ^9.2.0
+  bloc: ^9.2.1
   cloud_firestore: ^6.4.0
   device_info_plus: ^13.1.0
   firebase_core: ^4.6.0
